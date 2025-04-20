@@ -150,9 +150,8 @@ Target variable: **Quality** (numeric score)
 
 ## 🛠 Tools & Techniques
 - R Studio( dplyr, psych, corrplot, ggplot2, car, neuralnet)
-- Linear Regression
-- Neural Networks (Multilayer Perceptron)
-- VIF for multicollinearity diagnostics
+- Machine Learning Model: Neural Networks (Multilayer Perceptron)
+- Correlation, Linear Regression, VIF for multicollinearity diagnostics
 
 
 ---
