@@ -207,13 +207,12 @@ Target variable: **Disease (1 = Liver Disease, 0 = No Disease)**
 | Model 6 | Significant only | 3 | **0.7414** ✅ |
 
 - Using only statistically significant variables increased model efficiency and performance
-
-
 ---
 
 ## 🛠 Tools & Techniques
 - R Studio (neuralnet, caret)
 - Machine Learning Models: Neural Networks (binary output)
+- Correlation Analysis, Logit Regression
 
   ---
 ## 🫀 Assignment 1: Medical Analysis -- Heart Failure
