@@ -1,216 +1,6 @@
 # Machine Learning for Business
 BUA 751: Machine Learning for Business assignments demonstrating the machine learning skills I acquired at Syracuse University.
 
-
-## 🫀 Assignment 1: Medical Analysis -- Heart Failure
-A machine learning classification project using Perceptron and Support Vector Machine (SVM) to predict heart failure events based on patient clinical records.
-
-## 📊 Dataset
-This project analyzes a heart failure dataset including features such as:
-- Age
-- Serum Creatinine
-- Serum Sodium
-- Ejection Fraction
-- Creatinine Phosphokinase
-- Smoking, Diabetes, etc.
-
-Target variable: **DEATH_EVENT (0 = Alive, 1 = Death)**
-
----
-
-## 🧭 Workflow
-
-### 1️⃣ Exploratory Data Analysis (EDA)
-#### Correlation Analysis:
-- Visualized relationship between `DEATH_EVENT` and continuous variables
-- Plotted pairwise relationships with color-coded death events
----
-
-### 2️⃣ Perceptron Models
-
-| Model | Features Used | Accuracy |
-|-------|----------------|----------|
-| Model 1 | Ejection Fraction, Age | 0.633 |
-| Model 2 | Ejection Fraction, Serum Creatinine | 0.644 |
-| Model 3 | Ejection Fraction, Serum Creatinine, Age | 0.667 |
-| Model 4 | Ejection Fraction, Serum Creatinine, Serum Sodium, Age | **0.711** ✅
-
----
-
-### 3️⃣ Support Vector Machines (SVM)
-
-| Model | Features Used | Accuracy |
-|-------|----------------|----------|
-| Model 1 | Age, Smoking | 0.689 |
-| Model 2 | Diabetes, Creatinine Phosphokinase | 0.678 |
-| Model 3 | Age, Smoking, Diabetes, CPK | **0.700** ✅ |
-| Model 4 | Age, Smoking, Diabetes, Sex, High Blood Pressure, Ejection Fraction | 0.689 |
-
-- SVM Results were interpreted visually to analyze:
-  - Effects of **smoking** and **diabetes**
-  - Risk comparison between patient profiles (e.g., smoker vs non-smoker, with/without high blood pressure)
- 
-  ---
-🛠 Tools & Techniques
-
-- R Studio (dplyr, ggplot2, e1071)
-
- - Machine Learning Models: Perceptron, SVM
-
-- Accuracy Evaluation
-
----
-
-### 🩺 Assignment 2: Indian Liver Patient Analysis
-
-
-A machine learning classification project using **Logistic Regression** and **Neural Networks** to analyze and predict liver disease based on patient attributes.
-
-
-## 📊 Dataset
-This analysis focuses on Indian Liver Patient records with features such as:
-- Age
-- Total Bilirubin, Direct Bilirubin
-- Alkaline Phosphotase
-- Alamine and Aspartate Aminotransferase
-- Albumin, Total Proteins, Albumin/Globulin Ratio
-- Gender
-
-Target variable: **Disease (1 = Liver Disease, 0 = No Disease)**
-
----
-
-## 🧭 Workflow
-
-### 1️⃣ Exploratory Data Analysis (EDA)
-#### Correlation Analysis
-- Visualized the relationship between each continuous variable and disease status
-- Highlighted two strong pairwise relationships:
-  - **Direct Bilirubin vs. Total Bilirubin**
-  - **Aspartate vs. Alamine Aminotransferase**
-  - Performed Pearson correlation across all variables
-  - **Direct Bilirubin** showed the strongest correlation with disease status (0.2463)
-
----
-
-### 2️⃣ Logistic Regression (Logit)
-- Identified variables with significant predictive power:
-  - **Positive impact**: Age, Alamine Aminotransferase, Total Proteins
-  - **Negative impact**: Albumin
-
----
-
-### 3️⃣ Neural Networks (Binary Classification)
-
-| Model | Input Variables | Hidden Nodes | Accuracy |
-|-------|------------------|--------------|----------|
-| Model 1 | All | 1 | 0.7011 |
-| Model 2 | All | 2 | 0.7011 |
-| Model 3 | All | 3 | 0.7069 |
-| Model 4 | Significant only | 1 | 0.7011 |
-| Model 5 | Significant only | 2 | 0.7011 |
-| Model 6 | Significant only | 3 | **0.7414** ✅ |
-
-- Using only statistically significant variables increased model efficiency and performance
-
-
----
-
-## 🛠 Tools & Techniques
-- R Studio (neuralnet, caret)
-- Machine Learning Models: Neural Networks (binary output)
-
-### 🍷 Assignment 3: Wine Quality Analysis
-
-A regression-focused machine learning project using **Linear Regression** and **Neural Networks** to predict wine quality based on physicochemical tests.
-
-## 📊 Dataset
-The dataset contains various physicochemical properties of wine such as:
-- Alcohol
-- Chlorides
-- Density
-- Fixed Acidity
-- Volatile Acidity
-- pH
-- Sulphates
-- Residual Sugar
-- Free Sulfur Dioxide
-- Total Sulfur Dioxide
-
-Target variable: **Quality** (numeric score)
-
----
-
-## 🧭 Workflow
-
-### 1️⃣ Exploratory Data Analysis (EDA)
-#### Correlation Analysis
-- Plotted wine quality against each feature to observe trends.
-- Found strong pairwise correlations:
-  - **Residual Sugar & Density** (0.8388)
-  - **Density & Alcohol** (-0.7806)
-
-- Most impactful on quality:
-  - **Alcohol** (0.4354)
-  - **Density** (-0.3055)
-
-
----
-
-### 2️⃣ Linear Regression
-
-#### Full Model:
-- Used all variables
-- Identified **8 significant variables**
-
-#### Variance Inflation Analysis(AIF) Analysis:
-- **Density (VIF=28.21)** and **Residual Sugar (VIF=12.62)** showed high multicollinearity
-
-#### Refined Model:
-- Used only the 8 significant variables
-- Positive impact: Alcohol, Fixed Acidity, pH, Residual Sugar, Sulphates, Free SO₂
-- Negative impact: Density, Volatile Acidity
-
----
-
-### 3️⃣ Neural Networks
-
-| Model | Input Variables | Hidden Nodes | Accuracy |
-|-------|------------------|--------------|----------|
-| Model 1 | All | 1 | 0.5081 |
-| Model 2 | All | 2 | 0.5390 |
-| Model 3 | All | 3 | 0.5482 |
-| Model 4 | All | 4 | 0.5636 |
-| Model 5 | All | 5 | **0.5728** ✅ |
-| Model 6 | Significant Only | 1 | 0.5099 |
-| Model 7 | Significant Only | 2 | 0.5405 |
-| Model 8 | Significant Only | 3 | 0.5431 |
-| Model 9 | Significant Only | 4 | 0.5631 |
-| Model 10 | Significant Only | 5 | 0.5580 |
-
----
-
-## 💡 Key Takeaways
-
-- Density has a very high VIF (28.21) and Residual Sugar also shows high multicollinearity (VIF = 12.62), indicating strong linear dependency with other variables.
-
-- Density and Residual Sugar are strongly correlated (r = 0.84), which may explain their VIF values.
-
-- In linear models, removing one of these variables could reduce multicollinearity without losing predictive power.
-
-- Neural networks, being nonlinear, are more robust to multicollinearity, but it is still worth testing the model performance with and without those variables.
-
-- Empirical testing is crucial to evaluate if removing multicollinear features can improve neural network accuracy.
----
-
-## 🛠 Tools & Techniques
-- R Studio( dplyr, psych, corrplot, ggplot2, car, neuralnet)
-- Linear Regression
-- Neural Networks (Multilayer Perceptron)
-- VIF for multicollinearity diagnostics
-
-
-
 ### 🏠 Assignment 4: Pakistan House Price Sales_Analysis
 An end-to-end data analytics and machine learning project analyzing house prices in Pakistan. This study explores the impact of property type, city, and house features on housing prices using various predictive modeling techniques.
 
@@ -282,19 +72,210 @@ Key variables:
 
 ---
 
-## 💡 Key Takeaways
-
-- **Neural Network** had the strongest predictive power based on correlation.
-- **KNN** performed best among classification models based on accuracy.
-- All 5 predictors (property type, city, bedrooms, bathrooms, area) significantly influence price, as confirmed by p-values in linear regression.
-- No serious multicollinearity detected (all VIF < 10).
-- Modeling helped validate which house features impact price most in Pakistan.
-
----
-
 ## 🛠 Tools & Techniques
 - R Studio(dplyr, corrplot, car, fastDummies, e1071, caret, neuralnet, class, FNN, gmodels)
 - Machine Learning Models: Linear Regression, SVM, Neural Networks, KNN, Naïve Bayes
 - VIF Analysis, Correlation Matrix, Dummy Encoding
+
+
+### 🍷 Assignment 3: Wine Quality Analysis
+
+A regression-focused machine learning project using **Linear Regression** and **Neural Networks** to predict wine quality based on physicochemical tests.
+
+## 📊 Dataset
+The dataset contains various physicochemical properties of wine such as:
+- Alcohol
+- Chlorides
+- Density
+- Fixed Acidity
+- Volatile Acidity
+- pH
+- Sulphates
+- Residual Sugar
+- Free Sulfur Dioxide
+- Total Sulfur Dioxide
+
+Target variable: **Quality** (numeric score)
+
+---
+
+## 🧭 Workflow
+
+### 1️⃣ Exploratory Data Analysis (EDA)
+#### Correlation Analysis
+- Plotted wine quality against each feature to observe trends.
+- Found strong pairwise correlations:
+  - **Residual Sugar & Density** (0.8388)
+  - **Density & Alcohol** (-0.7806)
+
+- Most impactful on quality:
+  - **Alcohol** (0.4354)
+  - **Density** (-0.3055)
+
+
+---
+
+### 2️⃣ Linear Regression
+
+#### Full Model:
+- Used all variables
+- Identified **8 significant variables**
+
+#### Variance Inflation Analysis(AIF) Analysis:
+- **Density (VIF=28.21)** and **Residual Sugar (VIF=12.62)** showed high multicollinearity
+
+#### Refined Model:
+- Used only the 8 significant variables
+- Positive impact: Alcohol, Fixed Acidity, pH, Residual Sugar, Sulphates, Free SO₂
+- Negative impact: Density, Volatile Acidity
+
+---
+
+### 3️⃣ Neural Networks
+
+| Model | Input Variables | Hidden Nodes | Accuracy |
+|-------|------------------|--------------|----------|
+| Model 1 | All | 1 | 0.5081 |
+| Model 2 | All | 2 | 0.5390 |
+| Model 3 | All | 3 | 0.5482 |
+| Model 4 | All | 4 | 0.5636 |
+| Model 5 | All | 5 | **0.5728** ✅ |
+| Model 6 | Significant Only | 1 | 0.5099 |
+| Model 7 | Significant Only | 2 | 0.5405 |
+| Model 8 | Significant Only | 3 | 0.5431 |
+| Model 9 | Significant Only | 4 | 0.5631 |
+| Model 10 | Significant Only | 5 | 0.5580 |
+
+---
+
+## 🛠 Tools & Techniques
+- R Studio( dplyr, psych, corrplot, ggplot2, car, neuralnet)
+- Linear Regression
+- Neural Networks (Multilayer Perceptron)
+- VIF for multicollinearity diagnostics
+
+
+---
+
+### 🩺 Assignment 2: Indian Liver Patient Analysis
+
+
+A machine learning classification project using **Logistic Regression** and **Neural Networks** to analyze and predict liver disease based on patient attributes.
+
+
+## 📊 Dataset
+This analysis focuses on Indian Liver Patient records with features such as:
+- Age
+- Total Bilirubin, Direct Bilirubin
+- Alkaline Phosphotase
+- Alamine and Aspartate Aminotransferase
+- Albumin, Total Proteins, Albumin/Globulin Ratio
+- Gender
+
+Target variable: **Disease (1 = Liver Disease, 0 = No Disease)**
+
+---
+
+## 🧭 Workflow
+
+### 1️⃣ Exploratory Data Analysis (EDA)
+#### Correlation Analysis
+- Visualized the relationship between each continuous variable and disease status
+- Highlighted two strong pairwise relationships:
+  - **Direct Bilirubin vs. Total Bilirubin**
+  - **Aspartate vs. Alamine Aminotransferase**
+  - Performed Pearson correlation across all variables
+  - **Direct Bilirubin** showed the strongest correlation with disease status (0.2463)
+
+---
+
+### 2️⃣ Logistic Regression (Logit)
+- Identified variables with significant predictive power:
+  - **Positive impact**: Age, Alamine Aminotransferase, Total Proteins
+  - **Negative impact**: Albumin
+
+---
+
+### 3️⃣ Neural Networks (Binary Classification)
+
+| Model | Input Variables | Hidden Nodes | Accuracy |
+|-------|------------------|--------------|----------|
+| Model 1 | All | 1 | 0.7011 |
+| Model 2 | All | 2 | 0.7011 |
+| Model 3 | All | 3 | 0.7069 |
+| Model 4 | Significant only | 1 | 0.7011 |
+| Model 5 | Significant only | 2 | 0.7011 |
+| Model 6 | Significant only | 3 | **0.7414** ✅ |
+
+- Using only statistically significant variables increased model efficiency and performance
+
+
+---
+
+## 🛠 Tools & Techniques
+- R Studio (neuralnet, caret)
+- Machine Learning Models: Neural Networks (binary output)
+
+  ---
+## 🫀 Assignment 1: Medical Analysis -- Heart Failure
+A machine learning classification project using Perceptron and Support Vector Machine (SVM) to predict heart failure events based on patient clinical records.
+
+## 📊 Dataset
+This project analyzes a heart failure dataset including features such as:
+- Age
+- Serum Creatinine
+- Serum Sodium
+- Ejection Fraction
+- Creatinine Phosphokinase
+- Smoking, Diabetes, etc.
+
+Target variable: **DEATH_EVENT (0 = Alive, 1 = Death)**
+
+---
+
+## 🧭 Workflow
+
+### 1️⃣ Exploratory Data Analysis (EDA)
+#### Correlation Analysis:
+- Visualized relationship between `DEATH_EVENT` and continuous variables
+- Plotted pairwise relationships with color-coded death events
+---
+
+### 2️⃣ Perceptron Models
+
+| Model | Features Used | Accuracy |
+|-------|----------------|----------|
+| Model 1 | Ejection Fraction, Age | 0.633 |
+| Model 2 | Ejection Fraction, Serum Creatinine | 0.644 |
+| Model 3 | Ejection Fraction, Serum Creatinine, Age | 0.667 |
+| Model 4 | Ejection Fraction, Serum Creatinine, Serum Sodium, Age | **0.711** ✅
+
+---
+
+### 3️⃣ Support Vector Machines (SVM)
+
+| Model | Features Used | Accuracy |
+|-------|----------------|----------|
+| Model 1 | Age, Smoking | 0.689 |
+| Model 2 | Diabetes, Creatinine Phosphokinase | 0.678 |
+| Model 3 | Age, Smoking, Diabetes, CPK | **0.700** ✅ |
+| Model 4 | Age, Smoking, Diabetes, Sex, High Blood Pressure, Ejection Fraction | 0.689 |
+
+- SVM Results were interpreted visually to analyze:
+  - Effects of **smoking** and **diabetes**
+  - Risk comparison between patient profiles (e.g., smoker vs non-smoker, with/without high blood pressure)
+ 
+  ---
+🛠 Tools & Techniques
+
+- R Studio (dplyr, ggplot2, e1071)
+
+ - Machine Learning Models: Perceptron, SVM
+
+- Accuracy Evaluation
+
+
+
+
 
 
