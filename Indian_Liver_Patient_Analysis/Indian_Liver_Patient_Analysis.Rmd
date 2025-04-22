@@ -1,0 +1,387 @@
+---
+title: "Homework2"
+output: html_document
+date: "2025-02-25"
+---
+
+```{r}
+library(corrplot)
+library(neuralnet)
+library(caret)
+```
+
+=== Clean Data ===
+
+# convert Gender to dummy
+# Female = 0, Male = 1
+```{r}
+patient <- indian_liver_patient
+```
+
+```{r}
+patient$Gender <- ifelse(patient$Gender == "Female", 0,1)
+```
+
+```{r}
+sum(is.na(patient))
+```
+
+```{r}
+str(patient)
+```
+583 * 11
+
+# eliminate NA
+
+```{r}
+patient_clean <- na.omit(patient)
+```
+
+```{r}
+str(patient_clean)
+```
+579 * 11
+
+
+## Correlation 
+```{r}
+library(corrplot)
+```
+
+
+```{r}
+cor_matrix <- cor(patient_clean)
+```
+
+
+```{r}
+corrplot(round(cor_matrix, 3), 
+         method = "color",
+         order = "hclust", 
+         addCoef.col = "black", 
+         number.cex = 0.7, 
+         tl.col = "black", 
+         tl.srt = 45)    
+
+```
+2.b Direct_Bilirubin
+
+# logit 
+```{r}
+model_logit <- glm(Disease ~. ,data = patient_clean, family = "binomial")
+```
+```{r}
+summary(model_logit)
+```
+3a.
+Age, Alamine_Aminotransferase, Total_Protiens, Albumin
+
+```{r}
+model_logit2 <- glm(Disease ~Age + Alamine_Aminotransferase + Total_Protiens + Albumin ,data = patient_clean, family = "binomial")
+```
+
+```{r}
+summary(model_logit2)
+```
+
+# NeuralNet
+```{r}
+library(neuralnet)
+```
+
+```{r}
+set.seed(42)
+patient_index <- sample(nrow(patient_clean), 0.7 * nrow(patient_clean),
+                        replace = FALSE)
+patient_train <- patient_clean[patient_index, ]
+patient_test <- patient_clean[-patient_index, ]
+
+```
+
+```{r}
+tail(patient_clean)
+```
+```{r}
+tail(patient_train)
+```
+```{r}
+tail(patient_test)
+```
+
+a: hidden = 1
+```{r}
+set.seed(42)
+model_neural <- neuralnet(Disease ~.,
+                          data = patient_train,
+                          hidden = 1,
+                          lifesign = "minimal",
+                          linear.output = FALSE,
+                          threshold = 0.01)
+```
+
+```{r}
+plot(model_neural)
+```
+
+```{r}
+result_model_neural1 <- compute(model_neural, patient_test[1:10])
+```
+
+```{r}
+df_result_model_neural1 <- data.frame(actual=patient_test$Disease, prediction=result_model_neural1$net.result)
+```
+
+```{r}
+df_result_model_neural1$round_predic <- round(df_result_model_neural1$prediction)
+```
+
+```{r}
+df_result_model_neural1
+```
+
+```{r}
+df_result_model_neural1$actual <- as.factor(df_result_model_neural1$actual)
+df_result_model_neural1$round_predic <- as.factor(df_result_model_neural1$round_predic)
+```
+
+```{r}
+confusionMatrix(df_result_model_neural1$actual, df_result_model_neural1$round_predic)
+```
+# predict numbers are all 1 thats why there is an error (need levels)
+
+```{r}
+table_neural1_acc = table(df_result_model_neural1$actual, df_result_model_neural1$round_predic)
+```
+
+```{r}
+table_neural1_acc
+```
+```{r}
+122/174
+```
+
+============
+# 3a.model1. 
+accuracy: 70%
+=============
+
+
+3a. model 2 => hidden nodes = 2
+```{r}
+set.seed(42)
+model_neural2 <- neuralnet(Disease ~.,
+                           data = patient_train,
+                           hidden = 2,
+                           lifesign = "minimal",
+                           linear.output = FALSE,
+                           threshold = 0.01)
+```
+
+```{r}
+plot(model_neural2)
+```
+
+```{r}
+result_model_neural2 <- compute(model_neural2, patient_test[1:10])
+```
+
+```{r}
+df_result_model_neural2 <- data.frame(actual=patient_test$Disease, prediction=result_model_neural2$net.result)
+```
+
+
+```{r}
+df_result_model_neural2$round_predic <- round(df_result_model_neural2$prediction)
+```
+
+
+```{r}
+df_result_model_neural2
+```
+```{r}
+df_result_model_neural2$actual <- as.factor(df_result_model_neural2$actual)
+df_result_model_neural2$round_predic <- as.factor(df_result_model_neural2$round_predic)
+```
+
+```{r}
+confusionMatrix(df_result_model_neural2$actual, df_result_model_neural2$round_predic)
+```
+# Accuracy : 70%
+
+
+a: hidden = 3
+```{r}
+set.seed(42)
+model_neural3 <- neuralnet(Disease ~.,
+                           data = patient_train,
+                           hidden = 3 ,
+                           lifesign = "minimal",
+                           linear.output = FALSE,
+                           threshold = 0.01)
+```
+
+```{r}
+plot(model_neural3)
+```
+
+```{r}
+result_model_neural3 <- compute(model_neural3, patient_test[1:10])
+```
+
+```{r}
+df_result_model_neural3 <- data.frame(actual=patient_test$Disease, prediction=result_model_neural3$net.result)
+```
+
+```{r}
+df_result_model_neural3$round_predic <- round(df_result_model_neural3$prediction)
+```
+
+
+```{r}
+df_result_model_neural3
+```
+```{r}
+df_result_model_neural3$actual <- as.factor(df_result_model_neural3$actual)
+df_result_model_neural3$round_predic <- as.factor(df_result_model_neural3$round_predic)
+```
+
+```{r}
+confusionMatrix(df_result_model_neural3$actual, df_result_model_neural3$round_predic)
+```
+# Accuracy: 71%
+
+
+
+# 3b w significant variables 
+
+```{r}
+set.seed(42)
+model_neural_w_sig <- neuralnet(Disease ~ Age + Alamine_Aminotransferase + Total_Protiens + Albumin,
+                          data = patient_train,
+                          hidden = 1,
+                          lifesign = "minimal",
+                          linear.output = FALSE,
+                          threshold = 0.01)
+```
+```{r}
+plot(model_neural_w_sig)
+```
+
+```{r}
+result_model_neural_w_sig <- compute(model_neural_w_sig, patient_test[1:10])
+```
+
+```{r}
+df_result_model_neural_w_sig <- data.frame(actual=patient_test$Disease, prediction=result_model_neural_w_sig$net.result)
+```
+
+```{r}
+df_result_model_neural_w_sig$round_predic <- round(df_result_model_neural_w_sig$prediction)
+```
+
+
+```{r}
+df_result_model_neural_w_sig
+```
+```{r}
+df_result_model_neural_w_sig$actual <- as.factor(df_result_model_neural_w_sig$actual)
+df_result_model_neural_w_sig$round_predic <- as.factor(df_result_model_neural_w_sig$round_predic)
+```
+
+```{r}
+confusionMatrix(df_result_model_neural3$actual, df_result_model_neural3$round_predic)
+```
+# accuracy : 0.71
+
+====
+
+```{r}
+set.seed(42)
+model_neural_w_sig2 <- neuralnet(Disease ~ Age + Alamine_Aminotransferase + Total_Protiens + Albumin,
+                          data = patient_train,
+                          hidden = 2,
+                          lifesign = "minimal",
+                          linear.output = FALSE,
+                          threshold = 0.01)
+```
+```{r}
+plot(model_neural_w_sig2)
+```
+
+```{r}
+result_model_neural_w_sig2 <- compute(model_neural_w_sig2, patient_test[1:10])
+```
+
+```{r}
+df_result_model_neural_w_sig2 <- data.frame(actual=patient_test$Disease, prediction=result_model_neural_w_sig2$net.result)
+```
+
+```{r}
+df_result_model_neural_w_sig2$round_predic <- round(df_result_model_neural_w_sig2$prediction)
+```
+
+
+```{r}
+df_result_model_neural_w_sig2
+```
+```{r}
+df_result_model_neural_w_sig2$actual <- as.factor(df_result_model_neural_w_sig2$actual)
+df_result_model_neural_w_sig2$round_predic <- as.factor(df_result_model_neural_w_sig2$round_predic)
+```
+
+```{r}
+confusionMatrix(df_result_model_neural_w_sig2$actual, df_result_model_neural_w_sig2$round_predic)
+```
+# predict number are all 1 thats why there is an error
+
+```{r}
+table_neural2_w_sig_acc = table(df_result_model_neural_w_sig2$actual, df_result_model_neural_w_sig2$round_predic)
+```
+
+```{r}
+table_neural2_w_sig_acc
+```
+```{r}
+122/174
+```
+# accuracy : 70%
+
+
+```{r}
+set.seed(42)
+model_neural_w_sig3 <- neuralnet(Disease ~ Age + Alamine_Aminotransferase + Total_Protiens + Albumin,
+                          data = patient_train,
+                          hidden = 3,
+                          lifesign = "minimal",
+                          linear.output = FALSE,
+                          threshold = 0.01)
+```
+```{r}
+plot(model_neural_w_sig3)
+```
+
+```{r}
+result_model_neural_w_sig3 <- compute(model_neural_w_sig3, patient_test[1:10])
+```
+
+```{r}
+df_result_model_neural_w_sig3 <- data.frame(actual=patient_test$Disease, prediction=result_model_neural_w_sig3$net.result)
+```
+
+```{r}
+df_result_model_neural_w_sig3$round_predic <- round(df_result_model_neural_w_sig3$prediction)
+```
+
+
+```{r}
+df_result_model_neural_w_sig3
+```
+```{r}
+df_result_model_neural_w_sig3$actual <- as.factor(df_result_model_neural_w_sig3$actual)
+df_result_model_neural_w_sig3$round_predic <- as.factor(df_result_model_neural_w_sig3$round_predic)
+```
+
+```{r}
+confusionMatrix(df_result_model_neural_w_sig3$actual, df_result_model_neural_w_sig3$round_predic)
+```
+# accuracy: 74%
