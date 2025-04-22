@@ -1,0 +1,573 @@
+---
+title: "Homework 3"
+output: html_document
+date: "2025-03-25"
+---
+
+```{r}
+str(wine)
+```
+## 4898*12
+```{r}
+summary(wine)
+```
+
+```{r}
+sum(is.na(wine))
+```
+
+```{r}
+wine_clean <- na.omit(wine)
+```
+
+```{r}
+str(wine_clean)
+```
+## 4870 * 12
+
+# make colnames format better (w/o space)
+```{r}
+names(wine_clean) <- make.names(names(wine_clean))
+```
+
+```{r}
+library(psych)
+library(corrplot)
+```
+
+```{r}
+pairs.panels(wine_clean,
+             digits = 2,
+             pch = 1,
+             lm = TRUE, 
+             ellipses = FALSE)
+```
+## 2b: alchohol
+
+```{r}
+cor_matrix <- cor(wine_clean, use = "pairwise.complete.obs")
+```
+```{r}
+cor_matrix
+```
+
+```{r}
+corrplot(cor_matrix, 
+         method = "color",
+         order = "hclust", 
+         addCoef.col = "black", 
+         number.cex = 0.7, 
+         tl.col = "black", 
+         tl.srt = 45)    
+
+```
+## 2b: alcohol
+
+```{r}
+library(ggplot2)
+```
+```{r}
+ggplot(wine_clean) + aes(x=quality, y = density) + geom_point()  + geom_smooth(method = "lm", se = FALSE, linetype = "dashed", color = "blue")
+```
+```{r}
+ggplot(wine_clean,
+       aes(x=quality, y = alcohol)) +
+  geom_point()+
+  geom_smooth(method = "lm",
+              se = FALSE,
+              linetype = "dashed",
+              color = "blue")
+```
+
+
+
+```{r}
+lm_wine <-lm(quality ~.,
+             data = wine_clean)
+```
+
+```{r}
+summary(lm_wine)
+```
+#### fixed acidity, volatile acidity, residual sugar, free sulfur dioxide, density, pH, sulphates, alcohol are significant.
+
+#VIF:
+```{r}
+library(car)
+```
+
+```{r}
+vif_wine <- vif(lm_wine)
+sort(vif_wine, decreasing = TRUE)
+```
+## 3b: density >10, residual sugar >10.
+## 3b : higher than 10 indicates the multicollinearity (correlation with other variables)
+
+```{r}
+lm_wine_w_sig <-lm(quality ~ fixed.acidity + volatile.acidity + residual.sugar + free.sulfur.dioxide + density + pH + sulphates + alcohol,
+                   data = wine_clean)
+```
+
+```{r}
+summary(lm_wine_w_sig)
+```
+## Neural Network
+```{r}
+library(neuralnet)
+```
+
+# seperate wine_dataset to training data(70%) and testing data(30%)
+```{r}
+set.seed(42)
+wine_index <- sample(nrow(wine_clean),
+                     0.7 * nrow(wine_clean),
+                     replace = FALSE)
+
+wine_train <- wine_clean[wine_index,]
+wine_test <- wine_clean[-wine_index,]
+```
+
+```{r}
+tail(wine_clean)
+```
+
+```{r}
+tail(wine_train)
+```
+
+```{r}
+set.seed(42)
+wine_net <- neuralnet(quality ~.,
+                      data = wine_train,
+                      hidden = 1,
+                      lifesign = "minimal",
+                      linear.output = TRUE,
+                      threshold = 0.01)
+```
+
+```{r}
+wine_net$result.matrix
+```
+
+```{r}
+plot(wine_net)
+```
+
+
+```{r}
+set.seed(42)
+wine_net2 <- neuralnet(quality ~.,
+                      data = wine_train,
+                      hidden = 2,
+                      lifesign = "minimal",
+                      linear.output = TRUE,
+                      threshold = 0.01)
+```
+### seems like we need to do normalization
+[hidden: 2    thresh: 0.01    rep: 1/1    steps: stepmax	min thresh: 0.347233350612591
+Warning: Algorithm did not converge in 1 of 1 repetition(s) within the stepmax.]
+
+```{r}
+#functions definition
+normalize <- function(x){return((x-min(x))/(max(x)-min(x)))}
+denormalize <- function(y,x){return(y*(max(x)-min(x))+min(x))}
+```
+
+## normalized dataset: wine_norm
+```{r}
+wine_norm <- as.data.frame(lapply(wine_clean, normalize))
+```
+
+```{r}
+head(wine_norm)
+```
+
+```{r}
+library(dplyr)
+wine_norm %>% group_by(quality) %>% summarize( count = n())
+```
+
+
+# seperate normalized wine dataset to traning and testing datasets.
+```{r}
+set.seed(42)
+wine_index <- sample(nrow(wine_norm),
+                     0.7 * nrow(wine_norm),
+                     replace = FALSE)
+
+wine_train <- wine_norm[wine_index,]
+wine_test <- wine_norm[-wine_index,]
+```
+
+
+# node = 1
+```{r}
+set.seed(42)
+wine_net <- neuralnet(quality ~.,
+                      data = wine_train,
+                      hidden = 1,
+                      lifesign = "minimal",
+                      linear.output = TRUE,
+                      threshold = 0.05)
+```
+
+```{r}
+wine_net$result.matrix
+```
+
+```{r}
+plot(wine_net)
+```
+```{r}
+wine_test_wo_quality <- wine_test[, -ncol(wine_test)]
+```
+
+```{r}
+wine_net.results <- neuralnet::compute(wine_net, wine_test_wo_quality)
+```
+
+```{r}
+pred_quality_norm <- denormalize(wine_net.results$net.result, wine_norm$quality)
+```
+
+```{r}
+actual_quality_denorm <- denormalize(wine_test$quality, wine_norm$quality)
+```
+
+```{r}
+node1_results <- data.frame(actual = actual_quality_denorm,
+                      prediction = pred_quality_norm)
+```
+
+```{r}
+cor(node1_results$actual, node1_results$prediction)
+```
+## Accuracy: around 51%
+
+
+# nodes = 2
+```{r}
+set.seed(42)
+wine_net2 <- neuralnet(quality ~.,
+                      data = wine_train,
+                      hidden = 2,
+                      lifesign = "minimal",
+                      linear.output = TRUE,
+                      threshold = 0.05)
+```
+```{r}
+wine_net2$result.matrix
+```
+
+```{r}
+plot(wine_net2)
+```
+```{r}
+wine_net2.results <- neuralnet::compute(wine_net2, wine_test_wo_quality)
+```
+
+```{r}
+pred2_quality_norm <- denormalize(wine_net2.results$net.result, wine_norm$quality)
+```
+
+```{r}
+node2_results <- data.frame(actual = actual_quality_denorm,
+                      prediction = pred2_quality_norm)
+```
+
+```{r}
+cor(node2_results$actual, node2_results$prediction)
+```
+# Accuracy: around 54%
+
+
+# nodes = 3
+```{r}
+set.seed(42)
+wine_net3 <- neuralnet(quality ~.,
+                      data = wine_train,
+                      hidden = 3,
+                      lifesign = "minimal",
+                      linear.output = TRUE,
+                      threshold = 0.05)
+```
+
+```{r}
+wine_net3$result.matrix
+```
+
+```{r}
+plot(wine_net3)
+```
+```{r}
+wine_net3.results <- neuralnet::compute(wine_net3, wine_test_wo_quality)
+```
+
+```{r}
+pred3_quality_norm <- denormalize(wine_net3.results$net.result, wine_norm$quality)
+```
+
+
+```{r}
+node3_results <- data.frame(actual = actual_quality_denorm,
+                      prediction = pred3_quality_norm)
+```
+
+```{r}
+cor(node3_results$actual, node3_results$prediction)
+```
+# Accuracy: around 55%
+
+
+# nodes = 4
+```{r}
+set.seed(42)
+wine_net4 <- neuralnet(quality ~.,
+                      data = wine_train,
+                      hidden = 4,
+                      lifesign = "minimal",
+                      linear.output = TRUE,
+                      threshold = 0.05)
+```
+```{r}
+wine_net4$result.matrix
+```
+
+```{r}
+plot(wine_net4)
+```
+```{r}
+wine_net4.results <- neuralnet::compute(wine_net4, wine_test_wo_quality)
+```
+
+```{r}
+pred4_quality_norm <- denormalize(wine_net4.results$net.result, wine_norm$quality)
+```
+
+
+```{r}
+node4_results <- data.frame(actual = actual_quality_denorm,
+                      prediction = pred4_quality_norm)
+```
+
+```{r}
+cor(node4_results$actual, node4_results$prediction)
+```
+# Accuracy: around 56%
+
+# nodes = 5
+```{r}
+set.seed(42)
+wine_net5 <- neuralnet(quality ~.,
+                      data = wine_train,
+                      hidden = 5,
+                      lifesign = "minimal",
+                      linear.output = TRUE,
+                      threshold = 0.05)
+```
+```{r}
+wine_net5$result.matrix
+```
+
+```{r}
+plot(wine_net5)
+```
+
+```{r}
+wine_net5.results <- neuralnet::compute(wine_net5, wine_test_wo_quality)
+```
+
+```{r}
+pred5_quality_norm <- denormalize(wine_net5.results$net.result, wine_norm$quality)
+```
+
+```{r}
+node5_results <- data.frame(actual = actual_quality_denorm,
+                      prediction = pred5_quality_norm)
+```
+
+```{r}
+cor(node5_results$actual, node5_results$prediction)
+```
+# Accuracy: around 57%
+
+
+#node = 1 with significant variables
+```{r}
+set.seed(42)
+wine_net_w_sig <- neuralnet(quality ~ fixed.acidity + volatile.acidity + residual.sugar + free.sulfur.dioxide + density + pH + sulphates + alcohol,
+                      data = wine_train,
+                      hidden = 1,
+                      lifesign = "minimal",
+                      linear.output = TRUE,
+                      threshold = 0.05)
+```
+
+```{r}
+wine_net_w_sig$result.matrix
+```
+
+```{r}
+plot(wine_net_w_sig)
+```
+```{r}
+wine_net_w_sig.results <- neuralnet::compute(wine_net_w_sig, wine_test_wo_quality)
+```
+
+```{r}
+pred_w_sig_quality_norm <- denormalize(wine_net_w_sig.results$net.result, wine_norm$quality)
+```
+
+```{r}
+node1_w_sig_results <- data.frame(actual = actual_quality_denorm,
+                      prediction = pred_w_sig_quality_norm)
+```
+
+```{r}
+cor(node1_w_sig_results$actual, node1_w_sig_results$prediction)
+```
+#node = 2 with significant variables
+```{r}
+set.seed(42)
+wine_net2_w_sig <- neuralnet(quality ~ fixed.acidity + volatile.acidity + residual.sugar + free.sulfur.dioxide + density + pH + sulphates + alcohol,
+                      data = wine_train,
+                      hidden = 2,
+                      lifesign = "minimal",
+                      linear.output = TRUE,
+                      threshold = 0.05)
+```
+
+```{r}
+wine_net2_w_sig$result.matrix
+```
+
+```{r}
+plot(wine_net2_w_sig)
+```
+```{r}
+wine_net2_w_sig.results <- neuralnet::compute(wine_net2_w_sig, wine_test_wo_quality)
+```
+
+```{r}
+pred2_w_sig_quality_norm <- denormalize(wine_net2_w_sig.results$net.result, wine_norm$quality)
+```
+
+```{r}
+node2_w_sig_results <- data.frame(actual = actual_quality_denorm,
+                      prediction = pred2_w_sig_quality_norm)
+```
+
+```{r}
+cor(node2_w_sig_results$actual, node2_w_sig_results$prediction)
+```
+# Accuracy: around 54.04%
+
+
+#node = 3 with significant variables
+```{r}
+set.seed(42)
+wine_net3_w_sig <- neuralnet(quality ~ fixed.acidity + volatile.acidity + residual.sugar + free.sulfur.dioxide + density + pH + sulphates + alcohol,
+                      data = wine_train,
+                      hidden = 3,
+                      lifesign = "minimal",
+                      linear.output = TRUE,
+                      threshold = 0.05)
+```
+
+```{r}
+wine_net3_w_sig$result.matrix
+```
+
+```{r}
+plot(wine_net3_w_sig)
+```
+```{r}
+wine_net3_w_sig.results <- neuralnet::compute(wine_net3_w_sig, wine_test_wo_quality)
+```
+
+```{r}
+pred3_w_sig_quality_norm <- denormalize(wine_net3_w_sig.results$net.result, wine_norm$quality)
+```
+
+```{r}
+node3_w_sig_results <- data.frame(actual = actual_quality_denorm,
+                      prediction = pred3_w_sig_quality_norm)
+```
+
+```{r}
+cor(node3_w_sig_results$actual, node3_w_sig_results$prediction)
+```
+# Accuracy: around 54.3%
+
+#node = 4 with significant variables
+```{r}
+set.seed(42)
+wine_net4_w_sig <- neuralnet(quality ~ fixed.acidity + volatile.acidity + residual.sugar + free.sulfur.dioxide + density + pH + sulphates + alcohol,
+                      data = wine_train,
+                      hidden = 4,
+                      lifesign = "minimal",
+                      linear.output = TRUE,
+                      threshold = 0.05)
+```
+
+```{r}
+wine_net4_w_sig$result.matrix
+```
+
+```{r}
+plot(wine_net4_w_sig)
+```
+```{r}
+wine_net4_w_sig.results <- neuralnet::compute(wine_net4_w_sig, wine_test_wo_quality)
+```
+
+```{r}
+pred4_w_sig_quality_norm <- denormalize(wine_net4_w_sig.results$net.result, wine_norm$quality)
+```
+
+```{r}
+node4_w_sig_results <- data.frame(actual = actual_quality_denorm,
+                      prediction = pred4_w_sig_quality_norm)
+```
+
+```{r}
+cor(node4_w_sig_results$actual, node4_w_sig_results$prediction)
+```
+
+# Accuracy: around 56%
+
+#node = 5 with significant variables
+```{r}
+set.seed(42)
+wine_net5_w_sig <- neuralnet(quality ~ fixed.acidity + volatile.acidity + residual.sugar + free.sulfur.dioxide + density + pH + sulphates + alcohol,
+                      data = wine_train,
+                      hidden = 5,
+                      lifesign = "minimal",
+                      linear.output = TRUE,
+                      threshold = 0.05)
+```
+
+```{r}
+wine_net5_w_sig$result.matrix
+```
+
+```{r}
+plot(wine_net5_w_sig)
+```
+```{r}
+wine_net5_w_sig.results <- neuralnet::compute(wine_net5_w_sig, wine_test_wo_quality)
+```
+
+```{r}
+pred5_w_sig_quality_norm <- denormalize(wine_net5_w_sig.results$net.result, wine_norm$quality)
+```
+
+```{r}
+node5_w_sig_results <- data.frame(actual = actual_quality_denorm,
+                      prediction = pred5_w_sig_quality_norm)
+```
+
+```{r}
+cor(node5_w_sig_results$actual, node5_w_sig_results$prediction)
+```
+# Accuracy: around 56%
