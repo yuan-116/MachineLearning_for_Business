@@ -1,0 +1,521 @@
+---
+title: "Homework 4"
+output: html_document
+date: "2025-04-09"
+---
+
+```{r}
+library(dplyr)
+```
+
+```{r}
+str(df_house_price)
+```
+
+```{r}
+summary(df_house_price)
+```
+
+```{r}
+sum(is.na(df_house_price))
+```
+
+```{r}
+df_house_price %>% distinct(property_type)
+```
+
+
+```{r}
+quant_variables <- c('price', 'bedrooms', 'baths', 'Area_in_Marla')
+```
+
+# 2-a
+```{r}
+## max highest house price by property_type
+df_house_price %>%
+  group_by(property_type) %>%
+  summarize(max_price = max(price)) %>%
+  arrange(desc(max_price))
+```
+
+# 2-a
+```{r}
+## min lowest house price by property_type
+df_house_price %>%
+  group_by(property_type) %>%
+  summarize(min_price = min(price)) %>%
+  arrange(desc(min_price))
+```
+# 2-a
+```{r}
+## min and max average house price by property_type
+df_house_price %>%
+  group_by(property_type) %>%
+  summarize(average_price = mean(price)) %>%
+  arrange(desc(average_price))
+```
+
+
+# 2-b
+```{r}
+## max highest house price by city
+df_house_price %>%
+  group_by(city) %>%
+  summarize(max_price = max(price)) %>%
+  arrange(desc(max_price))
+```
+
+# 2-b
+```{r}
+## min lowest house price by city
+df_house_price %>%
+  group_by(city) %>%
+  summarize(min_price = min(price)) %>%
+  arrange(desc(min_price))
+```
+
+# 2-b
+```{r}
+## min and max average house price by city
+df_house_price %>%
+  group_by(city) %>%
+  summarize(avg_price = mean(price)) %>%
+  arrange(desc(avg_price))
+```
+
+```{r}
+library(corrplot)
+```
+
+```{r}
+cor_matrix <- cor(df_house_price[,quant_variables], use = "pairwise.complete.obs")
+cor_matrix
+```
+
+```{r}
+corrplot(cor_matrix, 
+         method = "color",
+         order = "hclust", 
+         addCoef.col = "black",
+         tl.col = "black", 
+         tl.srt = 45)  
+```
+# VIF
+```{r}
+vif_house <- lm(price ~ bedrooms + baths + Area_in_Marla,
+               data = df_house_price)
+```
+
+```{r}
+summary(vif_house)
+```
+
+```{r}
+library(car)
+```
+
+```{r}
+vif(vif_house)
+```
+# no one over 10, no multicollearity
+
+
+# clean the data
+## checked the questions in the rest questions, "ID, purpose, location" variables are not necessary.
+```{r}
+df_hp_clean <- df_house_price[, c(quant_variables, "city", "property_type")]
+```
+
+
+```{r}
+df_hp_clean %>% distinct(city)
+```
+
+```{r}
+df_hp_clean %>% distinct(property_type)
+```
+
+```{r}
+library(fastDummies)
+```
+
+
+```{r}
+df_dum_all <- fastDummies::dummy_cols(
+  df_hp_clean,
+  select_columns = c("city", "property_type"),
+  remove_first_dummy = TRUE
+)
+```
+## not showing Faisalabad(city)
+## not showing Farm House(property_type)
+
+```{r}
+# remove selected columns
+df_hp_final <- fastDummies::dummy_cols(
+  df_hp_clean,
+  select_columns = c("city", "property_type"),
+  remove_first_dummy = TRUE,
+  remove_selected_columns = TRUE
+)
+```
+
+
+```{r}
+summary(df_hp_final)
+```
+# A: > 20000000
+  B: 14517334 < P <= 20000000
+  C: 6700000  < P <= 14517334
+  D: <= 6700000   
+
+(three ways)
+```{r}
+# first thought
+df_hp_final$pricequartile <- ifelse(df_hp_final$price > 20000000, "A",
+                             ifelse(df_hp_final$price > 14517334, "B",
+                             ifelse(df_hp_final$price > 6700000, "C", "D")))
+
+```
+
+
+```{r}
+# second thought
+df_hp_final <- df_hp_final %>%
+  mutate(pricequartile = case_when(
+    price > 20000000 ~ "A",
+    price > 14517334 ~ "B",
+    price > 6700000  ~ "C",
+    TRUE ~ "D"
+  ))
+```
+
+```{r}
+#chatgpt way; almost forgot cut
+df_house_price$price_class <- cut(df_house_price$price,
+                                  breaks = c(-Inf, 6700000, 14517334, 20000000, Inf),
+                                  labels = c("D", "C", "B", "A"),
+                                  right = TRUE)
+
+```
+
+## making sure column names dont contain any space
+```{r}
+df_hp_final <- df_hp_final %>%
+  rename(property_type_Lower_Portion = `property_type_Lower Portion`)
+```
+
+```{r}
+df_hp_final <- df_hp_final %>%
+  rename(property_type_Upper_Portion = `property_type_Upper Portion`)
+```
+
+
+```{r}
+colnames(df_hp_final)
+```
+
+```{r}
+lm_hp <- lm(price ~ bedrooms + baths +Area_in_Marla +
+              city_Islamabad +city_Karachi + city_Lahore + city_Rawalpindi +
+              property_type_Flat + property_type_House + property_type_Lower_Portion +  property_type_Penthouse + property_type_Room + property_type_Upper_Portion,
+            data = df_hp_final)
+```
+
+
+```{r}
+summary(lm_hp)
+```
+
+
+```{r}
+lm_hp_notdummy<- lm(price ~ bedrooms + baths + Area_in_Marla + city + property_type,
+                    data = df_hp_clean)
+```
+
+
+```{r}
+summary(lm_hp_notdummy)
+```
+
+# D. SVM
+```{r}
+library(e1071)
+```
+
+
+```{r}
+str(df_hp_final)
+```
+```{r}
+df_hp_final$pricequartile <- as.factor(df_hp_final$pricequartile)
+```
+
+```{r}
+str(df_hp_final)
+```
+** SETTING THE TRAINING DATA AND TEST DATA 
+```{r}
+set.seed(42)
+ml_index <- sample(nrow(df_hp_final),
+                     0.7 * nrow(df_hp_final),
+                     replace = FALSE)
+
+hp_train <- df_hp_final[ml_index,]
+hp_test <- df_hp_final[-ml_index,]
+```
+
+```{r}
+svm_model <- svm(pricequartile ~ bedrooms + baths + Area_in_Marla +
+                   city_Islamabad +city_Karachi + city_Lahore + city_Rawalpindi +
+                   property_type_Flat + property_type_House + property_type_Lower_Portion + property_type_Penthouse + property_type_Room + property_type_Upper_Portion,
+                 data = hp_train)
+```
+
+
+```{r}
+print(svm_model)
+```
+
+```{r}
+summary(svm_model)
+```
+
+```{r}
+svm_predict <- predict(svm_model, newdata = hp_test[,-15], type = "response")
+```
+
+
+```{r}
+svm_predicttable <- table(Actual = hp_test$pricequartile, Predicted = svm_predict)
+```
+
+
+```{r}
+svm_predicttable
+```
+
+
+```{r}
+#calculate the accuracy
+sum(diag(svm_predicttable))/sum(svm_predicttable)
+```
+Accuracy: around 66.38%
+
+```{r}
+library(caret)
+confusionMatrix(hp_test$pricequartile, svm_predict)
+```
+
+
+
+
+E. neural network
+Because we are going to using "price" variable, the range of "price" is too wide, we need to normalize the data from 0 - 1.
+```{r}
+#functions definition
+normalize <- function(x){return((x-min(x))/(max(x)-min(x)))}
+denormalize <- function(y,x){return(y*(max(x)-min(x))+min(x))}
+```
+
+```{r}
+df_hp_final_norm <- as.data.frame(lapply(df_hp_final[,-15], normalize))
+
+```
+
+# split the dataset to training and test
+
+```{r}
+set.seed(42)
+
+n_net_hp_train <- df_hp_final_norm[ml_index,]
+n_net_hp_test <- df_hp_final_norm[-ml_index,]
+```
+
+
+```{r}
+library(neuralnet)
+```
+
+```{r}
+set.seed(42)
+n_net_model <- neuralnet(price ~ bedrooms + baths + Area_in_Marla +
+                           city_Islamabad + city_Karachi + city_Lahore + city_Rawalpindi +
+                           property_type_Flat + property_type_House + property_type_Lower_Portion + property_type_Penthouse + property_type_Room + property_type_Upper_Portion, 
+                         hidden = 5,
+                         data = n_net_hp_train,
+                         lifesign = "minimal",
+                         linear.output = TRUE,
+                         threshold = 0.05)
+
+
+```
+```{r}
+plot(n_net_model)
+```
+```{r}
+n_net_model$weights  # Should not be NULL or empty
+
+```
+
+```{r}
+n_net_result <- compute(n_net_model, n_net_hp_test[,-1])
+```
+
+```{r}
+price_denorm <- denormalize(n_net_result$net.result, df_hp_final_norm$price)
+```
+
+```{r}
+actual_price <- df_hp_final_norm$price[-n_net_index]
+```
+
+```{r}
+cor(price_denorm, actual_price)
+```
+## CORRELTION IS AROUND 0.84
+
+
+F. K-nearest
+
+
+```{r}
+knn_hp_train_labels <- df_hp_final[ml_index, 15, drop = TRUE]
+knn_hp_test_labels <- df_hp_final[-ml_index, 15, drop = TRUE]
+```
+
+# remove the price column
+```{r}
+knn_hp_train <- n_net_hp_train[,-1]
+knn_hp_test <- n_net_hp_test[,-1]
+```
+
+
+```{r}
+library(class)
+```
+
+
+```{r}
+knn_model <- class::knn(train = knn_hp_train,
+                 test = knn_hp_test,
+                 cl = knn_hp_train_labels,
+                 k = 15)
+```
+## too many ties in knn, and "class" knn cannot solve the tie problem
+
+Thus we are going to use "FNN" it fixed the problem of "tie"
+
+
+```{r}
+install.packages("FNN")
+library(FNN)
+
+```
+
+```{r}
+knn_model <- FNN::knn(train = knn_hp_train,
+                 test = knn_hp_test,
+                 cl = knn_hp_train_labels,
+                 k = 15)
+```
+
+
+```{r}
+library(gmodels)
+price_table <- CrossTable(x=knn_hp_test_labels,y=knn_model,prop.chisq = FALSE)
+```
+
+
+```{r}
+sum(diag(price_table$prop.tbl))
+```
+Accuracy: around 68.38%
+
+```{r}
+library(caret)
+confusionMatrix(knn_model,knn_hp_test_labels)
+```
+
+
+
+G: Naive Bayes
+
+```{r}
+NB_model <- naiveBayes(pricequartile ~ bedrooms + baths + Area_in_Marla +
+                   city_Islamabad +city_Karachi + city_Lahore + city_Rawalpindi +
+                   property_type_Flat + property_type_House + property_type_Lower_Portion + property_type_Penthouse + property_type_Room + property_type_Upper_Portion,
+                 data = hp_train,
+                 laplace = 1)
+```
+
+
+```{r}
+NB_model
+```
+
+
+```{r}
+NB_pred <- predict(NB_model, hp_test, type = "class")
+```
+
+
+```{r}
+confusionMatrix(NB_pred, hp_test$pricequartile)
+```
+# Accuracy: around 53.61%
+
+
+
+
+
+### ====kknn practice============================================================
+
+```{r}
+kknn_hp_train <- df_hp_final[ml_index,]
+kknn_hp_test <- df_hp_final[-ml_index,]
+```
+
+```{r}
+kknn_hp_train <- kknn_hp_train[,-1]
+kknn_hp_test <- kknn_hp_test[,-1]
+```
+
+
+```{r}
+
+library(kknn)
+
+kknn_model <- kknn(pricequartile ~ ., 
+                   train = kknn_hp_train, 
+                   test  = kknn_hp_test, 
+                   k     = 15,
+                   kernel = "triangular")  
+
+kknn_pred <- fitted(kknn_model)
+```
+
+```{r}
+kknn_pred
+```
+
+```{r}
+library(gmodels)
+```
+
+```{r}
+kknn_predicttable <- CrossTable(x= hp_test_labels, y = kknn_pred, prop.chisq = FALSE)
+```
+```{r}
+sum(diag(kknn_predicttable$prop.tbl))
+```
+
+```{r}
+library(caret)
+
+confusionMatrix(kknn_pred, hp_test_labels)
+```
+
+
+Accuracy : around 68.13%
+============================================================================================
