@@ -1,12 +1,14 @@
 # Machine Learning for Business
 BUA 751: Machine Learning for Business assignments demonstrating the machine learning skills I acquired at Syracuse University.
 
-### 🏠 Assignment 4: Pakistan House Price Sales_Analysis
+## 🏠 Assignment 4: Pakistan House Price Sales_Analysis
 An end-to-end data analytics and machine learning project analyzing house prices in Pakistan. This study explores the impact of property type, city, and house features on housing prices using various predictive modeling techniques.
+
+[📂Files and Presentation](https://github.com/yuan-116/MachineLearning_for_Business/tree/main/Pakistan_House_Price%20_Sales_Analysis)
 
 ---
 
-## 📊 Dataset Overview
+### 📊 Dataset Overview
 
 Key variables:
 - Property Type
@@ -18,9 +20,9 @@ Key variables:
 
 ---
 
-## 🧭 Workflow
+### 🧭 Workflow
 
-### 1️⃣ Exploratory Data Analysis (EDA)
+#### 1️⃣ Exploratory Data Analysis (EDA)
 - Created visualizations to explore price distributions:
   - **By property type**
   - **By city**
@@ -28,40 +30,40 @@ Key variables:
   - **By property type**
   - **By city**
 
-### 2️⃣ Correlation & Multicollinearity
+#### 2️⃣ Correlation & Multicollinearity
 - Strongest correlation found between **bathrooms and bedrooms** (r = 0.85)
 - VIF values for all variables < 10 → no serious multicollinearity
 
 ---
 
-### 3️⃣ Modeling Techniques
+#### 3️⃣ Modeling Techniques
 
-#### 🔹 Linear Regression
+##### 🔹 Linear Regression
 - Predicts price using property type, city, bedrooms, bathrooms, and area
 - Example prediction:
   - Lahore, 3 bedrooms, 2 baths, 10 Marla → **Predicted Price: $12,266,817**
 
-#### 🔹 SVM (Support Vector Machine)
+##### 🔹 SVM (Support Vector Machine)
 - Target: `pricequartile` (A: Highest, D: Lowest)
 - Accuracy: **0.6638**
 
-#### 🔹 Neural Network
+##### 🔹 Neural Network
 - Target: Price
 - 5 hidden nodes
 - Correlation: **0.84**
 
-#### 🔹 K-Nearest Neighbors (KNN)
+##### 🔹 K-Nearest Neighbors (KNN)
 - Target: `pricequartile`
 - Handled tie issue using `FNN` package
 - Accuracy: **0.6837** ✅ (Best accuracy among classification models)
 
-#### 🔹 Naïve Bayes
+##### 🔹 Naïve Bayes
 - Target: `pricequartile`
 - Accuracy: **0.5361**
 
 ---
 
-### 📊 Model Comparison
+#### 📊 Model Comparison
 
 | Model           | Target         | Metric      | Result    |
 |----------------|----------------|-------------|-----------|
@@ -72,17 +74,19 @@ Key variables:
 
 ---
 
-## 🛠 Tools & Techniques
+### 🛠 Tools & Techniques
 - R Studio(dplyr, corrplot, car, fastDummies, e1071, caret, neuralnet, class, FNN, gmodels)
 - Machine Learning Models: Linear Regression, SVM, Neural Networks, KNN, Naïve Bayes
 - VIF Analysis, Correlation Matrix, Dummy Encoding
 
 
-### 🍷 Assignment 3: Wine Quality Analysis
+## 🍷 Assignment 3: Wine Quality Analysis
 
 A regression-focused machine learning project using **Linear Regression** and **Neural Networks** to predict wine quality based on physicochemical tests.
 
-## 📊 Dataset
+[📂Files and Presentation](https://github.com/yuan-116/MachineLearning_for_Business/tree/main/Wine_Quality_Analysis)
+
+### 📊 Dataset
 The dataset contains various physicochemical properties of wine such as:
 - Alcohol
 - Chlorides
@@ -99,10 +103,10 @@ Target variable: **Quality** (numeric score)
 
 ---
 
-## 🧭 Workflow
+### 🧭 Workflow
 
-### 1️⃣ Exploratory Data Analysis (EDA)
-#### Correlation Analysis
+#### 1️⃣ Exploratory Data Analysis (EDA)
+##### Correlation Analysis
 - Plotted wine quality against each feature to observe trends.
 - Found strong pairwise correlations:
   - **Residual Sugar & Density** (0.8388)
@@ -114,24 +118,24 @@ Target variable: **Quality** (numeric score)
 
 
 ---
+#
+#### 2️⃣ Linear Regression
 
-### 2️⃣ Linear Regression
-
-#### Full Model:
+##### Full Model:
 - Used all variables
 - Identified **8 significant variables**
 
-#### Variance Inflation Analysis(AIF) Analysis:
+##### Variance Inflation Analysis(AIF) Analysis:
 - **Density (VIF=28.21)** and **Residual Sugar (VIF=12.62)** showed high multicollinearity
 
-#### Refined Model:
+##### Refined Model:
 - Used only the 8 significant variables
 - Positive impact: Alcohol, Fixed Acidity, pH, Residual Sugar, Sulphates, Free SO₂
 - Negative impact: Density, Volatile Acidity
 
 ---
 
-### 3️⃣ Neural Networks
+#### 3️⃣ Neural Networks
 
 | Model | Input Variables | Hidden Nodes | Accuracy |
 |-------|------------------|--------------|----------|
@@ -148,7 +152,7 @@ Target variable: **Quality** (numeric score)
 
 ---
 
-## 🛠 Tools & Techniques
+### 🛠 Tools & Techniques
 - R Studio( dplyr, psych, corrplot, ggplot2, car, neuralnet)
 - Machine Learning Model: Neural Networks (Multilayer Perceptron)
 - Correlation, Linear Regression, VIF for multicollinearity diagnostics
@@ -156,13 +160,15 @@ Target variable: **Quality** (numeric score)
 
 ---
 
-### 🩺 Assignment 2: Indian Liver Patient Analysis
+## 🩺 Assignment 2: Indian Liver Patient Analysis
 
 
 A machine learning classification project using **Logistic Regression** and **Neural Networks** to analyze and predict liver disease based on patient attributes.
 
+[📂Files and Presentation](https://github.com/yuan-116/MachineLearning_for_Business/tree/main/Indian_Liver_Patient_Analysis)
 
-## 📊 Dataset
+
+### 📊 Dataset
 This analysis focuses on Indian Liver Patient records with features such as:
 - Age
 - Total Bilirubin, Direct Bilirubin
@@ -175,10 +181,10 @@ Target variable: **Disease (1 = Liver Disease, 0 = No Disease)**
 
 ---
 
-## 🧭 Workflow
+### 🧭 Workflow
 
-### 1️⃣ Exploratory Data Analysis (EDA)
-#### Correlation Analysis
+#### 1️⃣ Exploratory Data Analysis (EDA)
+##### Correlation Analysis
 - Visualized the relationship between each continuous variable and disease status
 - Highlighted two strong pairwise relationships:
   - **Direct Bilirubin vs. Total Bilirubin**
@@ -188,14 +194,14 @@ Target variable: **Disease (1 = Liver Disease, 0 = No Disease)**
 
 ---
 
-### 2️⃣ Logistic Regression (Logit)
+#### 2️⃣ Logistic Regression (Logit)
 - Identified variables with significant predictive power:
   - **Positive impact**: Age, Alamine Aminotransferase, Total Proteins
   - **Negative impact**: Albumin
 
 ---
 
-### 3️⃣ Neural Networks (Binary Classification)
+#### 3️⃣ Neural Networks (Binary Classification)
 
 | Model | Input Variables | Hidden Nodes | Accuracy |
 |-------|------------------|--------------|----------|
@@ -209,7 +215,7 @@ Target variable: **Disease (1 = Liver Disease, 0 = No Disease)**
 - Using only statistically significant variables increased model efficiency and performance
 ---
 
-## 🛠 Tools & Techniques
+### 🛠 Tools & Techniques
 - R Studio (neuralnet, caret)
 - Machine Learning Models: Neural Networks (binary output)
 - Correlation Analysis, Logit Regression
@@ -218,7 +224,9 @@ Target variable: **Disease (1 = Liver Disease, 0 = No Disease)**
 ## 🫀 Assignment 1: Medical Analysis -- Heart Failure
 A machine learning classification project using Perceptron and Support Vector Machine (SVM) to predict heart failure events based on patient clinical records.
 
-## 📊 Dataset
+[📂Files and Presentation](https://github.com/yuan-116/MachineLearning_for_Business/tree/main/Medical_Analysis_HeartFailure)
+
+### 📊 Dataset
 This project analyzes a heart failure dataset including features such as:
 - Age
 - Serum Creatinine
@@ -231,15 +239,15 @@ Target variable: **DEATH_EVENT (0 = Alive, 1 = Death)**
 
 ---
 
-## 🧭 Workflow
+### 🧭 Workflow
 
-### 1️⃣ Exploratory Data Analysis (EDA)
-#### Correlation Analysis:
+#### 1️⃣ Exploratory Data Analysis (EDA)
+##### Correlation Analysis:
 - Visualized relationship between `DEATH_EVENT` and continuous variables
 - Plotted pairwise relationships with color-coded death events
 ---
 
-### 2️⃣ Perceptron Models
+#### 2️⃣ Perceptron Models
 
 | Model | Features Used | Accuracy |
 |-------|----------------|----------|
@@ -250,7 +258,7 @@ Target variable: **DEATH_EVENT (0 = Alive, 1 = Death)**
 
 ---
 
-### 3️⃣ Support Vector Machines (SVM)
+#### 3️⃣ Support Vector Machines (SVM)
 
 | Model | Features Used | Accuracy |
 |-------|----------------|----------|
