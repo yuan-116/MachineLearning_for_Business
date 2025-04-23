@@ -129,6 +129,7 @@ Key variables:
 - Machine Learning Models: Linear Regression, SVM, Neural Networks, KNN, Naïve Bayes
 - VIF Analysis, Correlation Matrix, Dummy Encoding
 
+---
 
 ## 🍷 Assignment 3: Wine Quality Analysis
 
