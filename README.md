@@ -11,8 +11,7 @@ This project applies various machine learning algorithms to predict and classify
 
 ### 📊 Dataset
 Attributes include:
-- Relative Compactness, Surface Area, Wall Area, Roof Area  
-- Overall Height, Orientation, Glazing Area, Glazing Area Distribution  
+- Relative Compactness, Surface Area, Wall Area, Roof Area, Overall Height, Orientation, Glazing Area, Glazing Area Distribution  
 - Targets:  
   - **Cooling Load** (continuous)  
   - **Cooling Category** (A–D, converted to binary for classification)
