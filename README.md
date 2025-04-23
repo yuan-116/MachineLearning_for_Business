@@ -45,13 +45,9 @@ Attributes include:
 - Dummy variables for categorical data  
 - Categorical target encoding for classification and binary classification tasks
 
----
 
-### 📌 Key Insight
-**Relative Compactness** shows the strongest correlation with Cooling Load and remains the top feature across most models.
 
 ---
-
 
 
 
