@@ -1,7 +1,7 @@
 # Machine Learning for Business
 BUA 751: Machine Learning for Business assignments demonstrating the machine learning skills I acquired at Syracuse University.
 
-## 🏠 Final Project - Energy Efficiency – Machine Learning on Cooling Load
+# 🏠 Final Project - Energy Efficiency – Machine Learning on Cooling Load
 **Author:** ChihHao Luca Yuan  
 **Date:** April 2025  
 
@@ -50,7 +50,7 @@ Attributes include:
 
 
 
-## 🏠 Assignment 4: Pakistan House Price Sales_Analysis
+# 🏠 Assignment 4: Pakistan House Price Sales_Analysis
 An end-to-end data analytics and machine learning project analyzing house prices in Pakistan. This study explores the impact of property type, city, and house features on housing prices using various predictive modeling techniques.
 
 [📂Files and Presentation](https://github.com/yuan-116/MachineLearning_for_Business/tree/main/Pakistan_House_Price%20_Sales_Analysis)
@@ -130,7 +130,7 @@ Key variables:
 
 ---
 
-## 🍷 Assignment 3: Wine Quality Analysis
+# 🍷 Assignment 3: Wine Quality Analysis
 
 A regression-focused machine learning project using **Linear Regression** and **Neural Networks** to predict wine quality based on physicochemical tests.
 
@@ -210,7 +210,7 @@ Target variable: **Quality** (numeric score)
 
 ---
 
-## 🩺 Assignment 2: Indian Liver Patient Analysis
+# 🩺 Assignment 2: Indian Liver Patient Analysis
 
 
 A machine learning classification project using **Logistic Regression** and **Neural Networks** to analyze and predict liver disease based on patient attributes.
@@ -271,7 +271,7 @@ Target variable: **Disease (1 = Liver Disease, 0 = No Disease)**
 - Correlation Analysis, Logit Regression
 
   ---
-## 🫀 Assignment 1: Medical Analysis -- Heart Failure
+# 🫀 Assignment 1: Medical Analysis -- Heart Failure
 A machine learning classification project using Perceptron and Support Vector Machine (SVM) to predict heart failure events based on patient clinical records.
 
 [📂Files and Presentation](https://github.com/yuan-116/MachineLearning_for_Business/tree/main/Medical_Analysis_HeartFailure)
