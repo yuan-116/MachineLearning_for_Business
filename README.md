@@ -1,6 +1,60 @@
 # Machine Learning for Business
 BUA 751: Machine Learning for Business assignments demonstrating the machine learning skills I acquired at Syracuse University.
 
+## 🏠 Final Project - Energy Efficiency – Machine Learning on Cooling Load
+**Author:** ChihHao Luca Yuan  
+**Date:** April 2025  
+
+This project applies various machine learning algorithms to predict and classify **Cooling Load**—a crucial factor in building energy efficiency. The dataset comprises building features such as compactness, surface area, and glazing.
+
+---
+
+### 📊 Dataset
+Attributes include:
+- Relative Compactness, Surface Area, Wall Area, Roof Area  
+- Overall Height, Orientation, Glazing Area, Glazing Area Distribution  
+- Targets:  
+  - **Cooling Load** (continuous)  
+  - **Cooling Category** (A–D, converted to binary for classification)
+
+---
+
+### 🧽 Workflow
+
+#### 1️⃣ Exploratory Data Analysis (EDA)
+- **Correlation Analysis** using scatter plots to display relationships between features and Cooling Load.
+- **Linear Regression** to assess variable significance (p-values) and multicollinearity (**VIF**).
+
+#### 2️⃣ Model Development
+
+| Model           | Target Variable         | Performance              | Best? |
+|----------------|-------------------------|--------------------------|--------|
+| Perceptron     | Cooling_cat (A/B vs C/D) | ~84% (best epoch)        |        |
+| SVM            | Cooling_cat              | **78.35%**               |        |
+| Neural Network | Cooling_Load (regression)| **0.9812 correlation**   | ✔️     |
+| KNN (k=51)     | Cooling_cat              | **75.32%**               |        |
+| Naive Bayes    | Cooling_cat              | 51.52%                   |        |
+| Decision Tree  | Cooling_bi (binary)      | **98.27%**               |        |
+| Random Forest  | Cooling_bi               | **99.13%**               | ✔️     |
+| XGBoost        | Cooling_bi               | **97.84%**               |        |
+
+---
+
+### 🛠️ Feature Engineering
+- Normalized numerical inputs for regression  
+- Dummy variables for categorical data  
+- Categorical target encoding for classification and binary classification tasks
+
+---
+
+### 📌 Key Insight
+**Relative Compactness** shows the strongest correlation with Cooling Load and remains the top feature across most models.
+
+---
+
+
+
+
 ## 🏠 Assignment 4: Pakistan House Price Sales_Analysis
 An end-to-end data analytics and machine learning project analyzing house prices in Pakistan. This study explores the impact of property type, city, and house features on housing prices using various predictive modeling techniques.
 
