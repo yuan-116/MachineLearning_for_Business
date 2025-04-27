@@ -204,7 +204,7 @@ Target variable: **Quality** (numeric score)
 
 ### 🛠 Tools & Techniques
 - R Studio( dplyr, psych, corrplot, ggplot2, car, neuralnet)
-- Machine Learning Model: Neural Networks (Multilayer Perceptron)
+- Machine Learning Model: Neural Networks (Continuous Variables)
 - Correlation, Linear Regression, VIF for multicollinearity diagnostics
 
 
