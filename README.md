@@ -40,7 +40,7 @@ Key variables:
 - Assigned Cooling Load into quartile categories (A, B, C, D)
 - Converted Cooling Category into binary labels (A/B: 1 vs C/D: 0)
 - Created dummy variables for Orientation and Glazing Area Distribution
-- Normalized numerical variables for regression and neural network models
+- Normalized numerical variables
 
 ---
 
