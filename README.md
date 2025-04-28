@@ -1,49 +1,123 @@
 # Machine Learning for Business
 BUA 751: Machine Learning for Business assignments demonstrating the machine learning skills I acquired at Syracuse University.
 
-# 🏠 Final Project - Energy Efficiency – Machine Learning on Cooling Load
-**Author:** ChihHao Luca Yuan  
-**Date:** April 2025  
+# 🏠 Final Project - Energy Efficiency: Machine Learning on Cooling Load
 
-This project applies various machine learning algorithms to predict and classify **Cooling Load**—a crucial factor in building energy efficiency. The dataset comprises building features such as compactness, surface area, and glazing.
+A machine learning project to predict and classify **Cooling Load**, a critical factor for building energy efficiency. Multiple supervised learning models were developed and compared based on building design attributes.
 
----
-
-### 📊 Dataset
-Attributes include:
-- Relative Compactness, Surface Area, Wall Area, Roof Area, Overall Height, Orientation, Glazing Area, Glazing Area Distribution  
-- Targets:  
-  - **Cooling Load** (continuous)  
-  - **Cooling Category** (A–D, converted to binary for classification)
+[📂Files and Presentation](GitHubLinkHere)
 
 ---
 
-### 🧽 Workflow
+### 📊 Dataset Overview
+
+Key variables:
+- Relative Compactness
+- Surface Area
+- Wall Area
+- Roof Area
+- Overall Height
+- Orientation
+- Glazing Area
+- Glazing Area Distribution  
+
+**Target Variables:**
+- **Cooling Load** (continuous)
+- **Cooling Category** (quartile-based A–D, converted into binary A/B vs C/D)
+
+---
+
+### 🧭 Workflow
 
 #### 1️⃣ Exploratory Data Analysis (EDA)
-- **Correlation Analysis** using scatter plots to display relationships between features and Cooling Load.
-- **Linear Regression** to assess variable significance (p-values) and multicollinearity (**VIF**).
+- Scatterplots to visualize feature relationships
+- Histograms for feature distributions
+- Descriptive statistics and correlation matrix
+- Linear Regression to assess feature significance
+- Variance Inflation Factor (VIF) analysis for multicollinearity detection
 
-#### 2️⃣ Model Development
-
-| Model           | Target Variable         | Performance              | Best? |
-|----------------|-------------------------|--------------------------|--------|
-| Perceptron     | Cooling_cat (A/B vs C/D) | ~84% (best epoch)        |        |
-| SVM            | Cooling_cat              | **78.35%**               |        |
-| Neural Network | Cooling_Load (regression)| **0.9812 correlation**   | ✔️     |
-| KNN (k=51)     | Cooling_cat              | **75.32%**               |        |
-| Naive Bayes    | Cooling_cat              | 51.52%                   |        |
-| Decision Tree  | Cooling_bi (binary)      | **98.27%**               |        |
-| Random Forest  | Cooling_bi               | **99.13%**               | ✔️     |
-| XGBoost        | Cooling_bi               | **97.84%**               |        |
+#### 2️⃣ Feature Engineering
+- Assigned Cooling Load into quartile categories (A, B, C, D)
+- Converted Cooling Category into binary labels (A/B: 1 vs C/D: 0)
+- Created dummy variables for Orientation and Glazing Area Distribution
+- Normalized numerical variables for regression and neural network models
 
 ---
 
-### 🛠️ Feature Engineering
-- Normalized numerical inputs for regression  
-- Dummy variables for categorical data  
-- Categorical target encoding for classification and binary classification tasks
+### ⚙️ Modeling Techniques
 
+##### 🔹 Perceptron (1–5)
+- Target: Cooling_cat (A/B vs C/D)
+- Accuracy: **98.27%**
+
+##### 🔹 SVM
+- Target: Cooling_cat
+- Accuracy: **78.35%**
+
+##### 🔹 Neural Network
+- Target: Cooling Load (continuous)
+- 1–5 hidden nodes tested
+- Best Correlation: **0.9812**
+
+##### 🔹 K-Nearest Neighbors (KNN)
+- Target: Cooling_cat
+- K = 21: Accuracy **74.46%**
+- K = 51: Accuracy **75.32%**
+
+##### 🔹 Naïve Bayes
+- Target: Cooling_cat
+- Accuracy: **51.52%**
+
+##### 🔹 Decision Tree
+- Target: Cooling_bi
+- Accuracy: **98.27%**
+
+##### 🔹 Random Forest
+- Target: Cooling_bi
+- Accuracy: **98.27%**
+
+##### 🔹 XGBoost
+- Target: Cooling_bi
+- Accuracy: **97.84%**
+
+---
+
+### 📊 Model Comparison
+
+| Model            | Target         | Metric        | Result    | Best? |
+|------------------|----------------|---------------|-----------|-------|
+| Perceptron       | Cooling_cat     | Accuracy      | **98.27%** | ✅    |
+| SVM              | Cooling_cat     | Accuracy      | 78.35%    |       |
+| Neural Network   | Cooling Load    | Correlation   | **0.9812** | ✅    |
+| KNN (K=21)       | Cooling_cat     | Accuracy      | 74.46%    |       |
+| KNN (K=51)       | Cooling_cat     | Accuracy      | 75.32%    |       |
+| Naïve Bayes      | Cooling_cat     | Accuracy      | 51.52%    |       |
+| Decision Tree    | Cooling_bi      | Accuracy      | **98.27%** | ✅    |
+| Random Forest    | Cooling_bi      | Accuracy      | **98.27%** | ✅    |
+| XGBoost          | Cooling_bi      | Accuracy      | 97.84%    |       |
+
+---
+
+
+### 🛡️ Key Findings
+- **Important Variables:**  
+  - Relative Compactness, Surface Area, Wall Area, Overall Height, and Glazing Area significantly impact Cooling Load.
+  - Random Forest found Glazing Area most critical, slightly ahead of Relative Compactness.
+  - Roof Area, despite multicollinearity issues, contributed in tree-based models.
+- **Model Insights:**  
+  - Random Forest, Decision Tree, and Perceptron achieved the best classification performance (~98.27%).
+  - Neural Network delivered strong Cooling Load prediction with a correlation of 0.9812.
+- **Energy Efficiency Implications:**  
+  - Modifying design factors like glazing and compactness can improve energy efficiency.
+  - SVM slice visualizations show how adjusting key features under fixed conditions can optimize building performance.
+
+---
+
+### 🛠 Tools & Techniques
+- **R Programming (RStudio):** dplyr, car, corrplot, fastDummies, e1071, caret, neuralnet, class, FNN, gmodels
+- **Machine Learning Models:** Perceptron, SVM, Neural Network, KNN, Naïve Bayes, Decision Tree, Random Forest, XGBoost
+- **Statistical Analysis:** Linear Regression, Correlation Matrix, VIF Analysis
+- **Feature Engineering:** Normalization, Dummy Encoding, Target Label Conversion
 
 
 ---
