@@ -1,0 +1,794 @@
+---
+title: "Energy Efficiency Machine Learning - Cooling Load"
+author: "ChihHao Luca Yuan"
+date: "2025-04"
+output: html_notebook
+---
+
+
+```{r}
+library(dplyr)
+```
+
+
+## change the columns' name
+```{r}
+colnames(EnergyEfficiency) <- c('Relative_Compactness', 'Surface_Area', 'Wall_Area', 'Roof_Area', 'Overall_Height', 'Orientation', 'Glazing_Area', 'Glazing_Area_Distribution', 'Heating_Load', 'Cooling_Load')
+```
+
+```{r}
+df_EE <- EnergyEfficiency %>% select(-Heating_Load)
+```
+
+```{r}
+sum(is.na(df_EE))
+```
+
+```{r}
+summary(df_EE)
+```
+
+```{r}
+df_EE$Cooling_cat <-ifelse(df_EE$Cooling_Load < 15.62, "D",
+                    ifelse(df_EE$Cooling_Load < 22.08, "C",
+                    ifelse(df_EE$Cooling_Load < 33.13, "B", "A")))
+```
+
+```{r}
+df_EE$Orientation <-ifelse(df_EE$Orientation == 2, "North",
+                    ifelse(df_EE$Orientation == 3, "East",
+                    ifelse(df_EE$Orientation == 4, "South", "West")))
+```
+
+```{r}
+linearm1 <- lm(Cooling_Load~ .,
+              EnergyEfficiency)
+```
+
+```{r}
+summary(linearm1)
+```
+#### NA means completely multicollinearity, indicating that we dont need this column at all for this analysis.
+(However in the Assignment instruction did not ask us to remove any columns in further analysis so i just kept it)
+
+
+```{r}
+linearm2 <- lm(Cooling_Load~ Relative_Compactness + Surface_Area + Wall_Area + Overall_Height + Orientation + Glazing_Area + Glazing_Area_Distribution,
+              EnergyEfficiency)
+```
+
+
+```{r}
+summary(linearm2)
+```
+```{r}
+df_EE %>% group_by(Roof_Area) %>% summarize(n = n())
+```
+
+
+
+```{r}
+library("car")
+
+viftable <- vif(linearm2)
+#sort
+sorttable <- sort(viftable,decreasing=TRUE)
+sorttable
+```
+Surface_Area, Relative_Compactness, Overall_Height >10: multicollinearity
+
+
+#### A is the worst efficiency
+#### Relative Compactness is high means not energy efficiency
+```{r}
+df_EE %>% group_by(Cooling_cat) %>% summarize( avg_rc = mean(Cooling_Load))
+```
+
+
+```{r}
+df_EE$Glazing_Area_Distribution <-ifelse(df_EE$Glazing_Area_Distribution == 0, "Unknown",
+                                  ifelse(df_EE$Glazing_Area_Distribution == 1, "Uniform",
+                                  ifelse(df_EE$Glazing_Area_Distribution == 2, "North", 
+                                  ifelse(df_EE$Glazing_Area_Distribution == 3, "East",
+                                  ifelse(df_EE$Glazing_Area_Distribution == 4, "South", "West")))))
+```
+
+```{r}
+df_EE <- fastDummies::dummy_cols(
+  df_EE,
+  select_columns = c("Orientation", "Glazing_Area_Distribution"),
+  remove_first_dummy = TRUE,
+  remove_selected_columns = TRUE
+)
+
+
+```
+
+
+```{r}
+str(df_EE)
+```
+# East will not show on the dataset after we converted to dummy variables. 
+
+
+```{r}
+summary(df_EE)
+```
+
+=====================================================================================================================================================================
+## b. perceptrons
+```{r}
+df_EE_for_perceptrons <- df_EE
+```
+
+
+```{r}
+df_EE_for_perceptrons$Cooling_cat <-ifelse(df_EE_for_perceptrons$Cooling_cat %in% c("A","B"), 1 , -1)
+```
+
+```{r}
+df_EE_for_perceptrons <- df_EE_for_perceptrons %>% select(-Cooling_Load)
+```
+
+```{r}
+set.seed(42)
+ml_index <- sample(nrow(df_EE),
+                   0.7 * nrow(df_EE),
+                   replace = FALSE)
+```
+
+
+```{r}
+ptrons_train<- df_EE_for_perceptrons[ml_index,]
+ptrons_test <- df_EE_for_perceptrons[-ml_index,]
+```
+
+# For perfecptrons training
+```{r}
+X <- ptrons_train%>% select(-Cooling_cat)
+y <- ptrons_train$Cooling_cat
+```
+
+# For testing accuracy
+```{r}
+X_test <- ptrons_test%>% select(-Cooling_cat)
+y_test <- ptrons_test$Cooling_cat
+```
+
+
+```{r}
+perceptron <- function(X, y, numEpochs) {
+  set.seed(42)
+results <- list()
+w <- runif(ncol(X), -10, 10) #Initalize weights
+# For loop - number of generations(epochs) - number of times dataset is ran through
+for(j in 1:numEpochs) {
+predictedResult <- numeric(length=100) # Initalize predictedResult vector
+numIncorrect = 0 # Keeps track of # of missclassified points
+# For loop - loop throught dataset
+for(i in 1:length(y)) {
+xi = as.numeric(unlist(X[i,])) # Convert dataframe to vector
+predictedResult[i] = sign(w %*% xi) # Predict the point
+# If predicted point is incorrect - change weight
+if(predictedResult[i] != y[i]) {
+numIncorrect = numIncorrect + 1 # Add one to # of missclassified points
+w <- w + as.numeric(y[i]) * xi # Update the weight w <- w + WiXi
+}
+}
+# Print results of this generation(epoch)
+cat("\nEpoch #: ", j)
+cat("\nNumber Incorrect: ", numIncorrect)
+cat("\nFinal Weight: ", w)
+}
+}
+```
+
+```{r}
+results <- perceptron(X, y, 5)
+results
+```
+
+```{r}
+w1 = c(21.64612, -946.7585, 3033.723, -1990.141, 188.3349, 2.781919, 5.731766, -0.3066681, 5.139846, 5.101296, 1.154836, 9.382245, 4.693445, -3.891424)  # Epoch #1
+w2 = c(24.88612, -1191.758, 3793.223, -2492.391, 237.3349, 5.231919, 9.731766, -1.306668, 6.139846, 7.101296, 1.154836, 12.38225, -1.306555, -3.891424)  # Epoch #2
+w3 = c(24.91612, -1240.758, 3915.723, -2578.141, 240.8349, 6.481919, 8.731766, 0.6933319, 6.139846, 9.101296, 0.1548355, 15.38225, -6.306555, -3.891424)  # Epoch #3
+w4 = c(26.49612, -1314.258, 4209.723, -2761.891, 261.8349, 8.081919, 7.731766, 1.693332, 8.139846, 12.1013, -2.845164, 18.38225, -12.30656, -1.891424)  # Epoch #4
+w5 = c(29.64612, -1461.258, 4626.223, -3043.641, 300.3349, 10.08192, 8.731766, 3.693332, 9.139846, 15.1013, -5.845164, 22.38225, -18.30656, -0.8914235)  # Epoch #5
+```
+
+========================== Accuracy Testing ===========================================
+
+```{r}
+head(X_test)
+```
+
+```{r}
+score <- as.matrix(X_test) %*% w2
+```
+
+```{r}
+ptron_prediction <- ifelse(score > 0, 1, -1)
+```
+
+```{r}
+library(caret)
+confusionMatrix(as.factor(ptron_prediction), as.factor(y_test))
+```
+
+====================================================================================================
+
+
+===== Run in loop from w1 to w5 =====
+```{r}
+weight_list <- list(w1, w2, w3, w4, w5)
+
+for (i in 1:length(weight_list)){
+  w <- weight_list[[i]]
+  score <- as.matrix(X_test) %*% w
+  ptron_prediction <- ifelse(score > 0, 1, -1)
+  cat("========This is w", i, "Accuracy======= \n")
+  print(confusionMatrix(as.factor(ptron_prediction), as.factor(y_test)))
+}
+```
+
+=======testing for my loop code =========
+
+```{r}
+weight_list <- list(w1, w2, w3, w4, w5)
+weight_list[2]
+print("===========")
+weight_list[[2]]
+```
+```{r}
+1:length(weight_list)
+```
+
+
+```{r}
+## for (i in weight_list) {
+##  cat("this is number", i, "\n")
+## }
+for (i in 1:length(weight_list)) {
+  cat("this is w", i, "\n")
+}
+
+```
+
+
+=====================================================================================================================================================================
+
+c. Support Vector Machine SVM
+# Using Category column "Cooling_cat"
+```{r}
+library(e1071)
+```
+
+
+```{r}
+df_EE_SVM <- df_EE %>% select(-Cooling_Load)
+```
+
+```{r}
+str(df_EE_SVM)
+```
+
+## dependent variable needs to be factor in SVM
+
+```{r}
+df_EE_SVM$Cooling_cat <- as.factor(df_EE_SVM$Cooling_cat)
+```
+
+```{r}
+SVM_train <- df_EE_SVM[ml_index,]
+SVM_test <- df_EE_SVM[-ml_index,]
+```
+
+
+```{r}
+EE_svm <- svm(Cooling_cat ~.,
+              data = SVM_train)
+```
+
+
+```{r}
+summary(EE_svm)
+```
+```{r}
+SVM_test[,7]
+```
+
+```{r}
+EE_predict <- predict(EE_svm,
+                      SVM_test[,-7],
+                      type = "response")
+```
+
+
+```{r}
+confusionMatrix(EE_predict,SVM_test$Cooling_cat)
+```
+Accuracy : 78.35%
+
+```{r}
+plot(EE_svm,
+     SVM_train,
+     Surface_Area ~ Wall_Area, slice = list(Relative_Compactness = 0.7,
+                                            Roof_Area = 110.25,
+                                            Overall_Height = 3.5,
+                                            Glazing_Area = 0.25,
+                                            Orientation_North = 0,
+                                            Orientation_South = 1,
+                                            Orientation_West = 0,
+                                            Glazing_Area_Distribution_North = 0,
+                                            Glazing_Area_Distribution_South = 1,
+                                            Glazing_Area_Distribution_Uniform = 0,
+                                            Glazing_Area_Distribution_Unknown =0, 
+                                            Glazing_Area_Distribution_West =0))
+```
+
+```{r}
+plot(EE_svm,
+     SVM_train,
+     Surface_Area ~ Wall_Area, slice = list(Relative_Compactness = 0.7,
+                                                       Roof_Area = 110.25,
+                                                       Overall_Height = 3.5,
+                                                       Glazing_Area = 0.25,
+                                                       Orientation_North = 0,
+                                                       Orientation_South = 0,
+                                                       Orientation_West = 0,
+                                                       Glazing_Area_Distribution_North = 0,
+                                                       Glazing_Area_Distribution_South = 0,
+                                                       Glazing_Area_Distribution_Uniform = 0,
+                                                       Glazing_Area_Distribution_Unknown =0, 
+                                                       Glazing_Area_Distribution_West =0))
+```
+
+
+## Neural Network
+## Using numeric "Cooling_load"
+
+```{r}
+normalize <- function(x) {return((x-min(x))/(max(x)-min(x)))}
+denormalize <- function(y,x){return(y*(max(x)-min(x))+min(x))}
+df_EE_neural_network <- df_EE %>% select(-Cooling_cat)
+df_EE_neural_network <- as.data.frame(lapply(df_EE_neural_network,normalize))
+
+```
+# Split to training and testing subset 
+```{r}
+NN_train <- df_EE_neural_network[ml_index,]
+NN_test <- df_EE_neural_network[-ml_index,]
+```
+
+```{r}
+library(neuralnet)
+```
+
+```{r}
+str(df_EE_neural_network)
+```
+
+
+=========== Neural Network Testing before running the loop ==============
+
+```{r}
+set.seed(42)
+EE_net <- neuralnet(Cooling_Load ~ .,
+                    NN_train,
+                    hidden=5,
+                    lifesign="minimal",
+                    linear.output=TRUE,
+                    threshold=0.01)
+```
+```{r}
+plot(EE_net)
+```
+
+```{r}
+EE_net.results <- compute(EE_net, NN_test)
+```
+
+
+```{r}
+denormalize <- function(y,x){return(y*(max(x)-min(x))+min(x))}
+
+NN_denorm <- denormalize(EE_net.results$net.result, df_EE$Cooling_Load)
+actual_NN_denorm <- denormalize(NN_test$Cooling_Load, df_EE$Cooling_Load)
+```
+
+
+```{r}
+cor(NN_denorm, actual_NN_denorm)
+```
+
+correlation of 5 nodes : 0.9812
+
+================================================
+
+```{r}
+
+EE_neural_list <- list()
+
+for (layer in 1:5) {
+  set.seed(42)
+  EE_net <- neuralnet(Cooling_Load ~ .,
+                      NN_train,
+                      hidden = layer,
+                      lifesign = "minimal",
+                      linear.output = TRUE,
+                      threshold = 0.01)
+  
+  EE_net.results <- compute(EE_net, NN_test)
+  
+  NN_denorm <- denormalize(EE_net.results$net.result, df_EE$Cooling_Load)
+  actual_NN_denorm <- denormalize(NN_test$Cooling_Load, df_EE$Cooling_Load)
+  
+  predictive_cor <- cor(NN_denorm, actual_NN_denorm)
+  EE_neural_list[[(layer)]] <- predictive_cor
+}
+
+
+print(EE_neural_list)
+
+```
+# The correlation of 5 nodes is the same 0.9812
+
+
+
+```{r}
+comparison_df <- data.frame(
+                            Predicted = NN_denorm,
+                            Actual = actual_NN_denorm
+                            )
+comparison_df
+
+```
+
+
+## Knn
+## Using categories: " Cooling_cat"
+
+```{r}
+df_EE_knn_pre <- df_EE %>% select(-Cooling_Load)
+```
+
+
+```{r}
+EE_knn_labels <- df_EE_knn_pre %>% select(Cooling_cat)
+EE_knn_labels
+```
+
+```{r}
+head(df_EE_knn_pre[,7])
+```
+
+
+```{r}
+df_EE_knn <- as.data.frame(lapply(df_EE_knn_pre[,-7],normalize))
+```
+
+```{r}
+df_EE_knn
+```
+
+
+```{r}
+knn_train <- df_EE_knn[ml_index,]
+knn_test <- df_EE_knn[-ml_index,]
+```
+
+
+
+```{r}
+knn_train_labels <- EE_knn_labels[ml_index,]
+knn_train_labels
+```
+```{r}
+##knn_train_wo_label <- knn_train %>% select(-Cooling_cat)
+##knn_train_wo_label
+```
+
+```{r}
+knn_test_labels <- EE_knn_labels[-ml_index,]
+knn_test_labels
+```
+```{r}
+## knn_test_wo_labels <- knn_test %>% select(-Cooling_cat)
+## knn_test_wo_labels
+```
+```{r}
+library(class)
+```
+
+```{r}
+set.seed(42)
+EE_knn <- knn(train = knn_train,
+              test = knn_test,
+              cl = knn_train_labels$Cooling_cat, 
+              k = 21)
+```
+
+
+```{r}
+
+confusionMatrix(EE_knn, as.factor(knn_test_labels$Cooling_cat))
+
+```
+k = 21 - Accuracy: 0.7446
+
+
+
+```{r}
+set.seed(42)
+EE_knn <- knn(train = knn_train,
+                     test = knn_test,
+                     cl = knn_train_labels$Cooling_cat, 
+                     k = 51)
+```
+
+
+```{r}
+confusionMatrix(EE_knn, as.factor(knn_test_labels$Cooling_cat))
+```
+
+# k = 51 - Accuracy: 0.7532
+
+=======================================================
+# Naive Bayes
+## Use category column: "Cooling_cat"
+
+```{r}
+df_EE[,7]
+```
+
+```{r}
+df_EE_nb <- df_EE[,-7]
+```
+
+```{r}
+head(df_EE_nb)
+```
+
+```{r}
+nb_train <- df_EE_nb[ml_index,]
+nb_test <- df_EE_nb[-ml_index,]
+```
+
+
+```{r}
+NB_model <- naiveBayes(Cooling_cat ~.,
+                       data = nb_train,
+                       laplace = 1)
+```
+
+```{r}
+NB_model
+```
+
+```{r}
+nb_pred <- predict(NB_model, nb_test, type="class")
+```
+
+```{r}
+confusionMatrix(nb_pred, as.factor(nb_test$Cooling_cat))
+```
+Accuracy: 51.52%
+
+# G: Decision tree
+## Category : "Cooling_cat": (A,B) = 1; (C,D) = 0
+```{r}
+library(rpart)
+library(rpart.plot)
+```
+# Dont need to normalize, we can directly use nb_train and nb_test subset
+```{r}
+dtree_train <- nb_train
+dtree_test <- nb_test
+```
+
+## **important : %in%
+```{r}
+dtree_train$Cooling_bi <- ifelse(dtree_train$Cooling_cat %in% c("A", "B"), 1, 0)
+```
+
+```{r}
+data.frame(dtree_train$Cooling_bi, dtree_train$Cooling_cat) 
+```
+
+```{r}
+dtree_test$Cooling_bi <- ifelse(dtree_test$Cooling_cat %in% c("A", "B"), 1, 0)
+```
+
+```{r}
+dtree_train <- dtree_train %>% select(-Cooling_cat)
+```
+
+```{r}
+dtree_test <- dtree_test %>% select(-Cooling_cat)
+```
+
+```{r}
+EE_tree <- rpart(Cooling_bi~ .,
+                 data = dtree_train,
+                 method = 'class')
+rpart.plot(EE_tree)
+```
+# Relative Compactnestt is the most important variable in EE
+
+```{r}
+dtree_test[,15]
+```
+
+
+```{r}
+EE_dtree_predict <- predict(EE_tree, dtree_test[,-15], type = 'class')
+```
+
+```{r}
+confusionMatrix(EE_dtree_predict, as.factor(dtree_test$Cooling_bi))
+```
+Accuracy: 0.9827
+
+
+# H: Random Forest
+```{r}
+library("randomForest")
+```
+# We can directly us dtree_train and dtree_test
+
+```{r}
+rforest_train <- dtree_train
+rforest_test <- dtree_test
+```
+
+# need to use "data_type: factor" to run random forest
+```{r}
+rforest_train$Cooling_bi <- as.factor(rforest_train$Cooling_bi)
+```
+
+
+```{r}
+set.seed(42)
+EE_forest <- randomForest(Cooling_bi~ .,
+                          data = rforest_train,
+                          ntree=500,
+                          proximity=TRUE,
+                          importance=TRUE)
+EE_forest
+```
+1 - 1.86% (error rate) = 98.14%
+(might have bias)
+
+```{r}
+importance(EE_forest)
+```
+[Relative_Compactness, Surface_Area, Roof_Area, Overall_Height, Glazing_Area, Wall_Area, Glazing_Area_Distribution_Unknown] are the most important variableS.
+(MeanDecreaseAccuracy is higher than others (i pick above 10))
+
+```{r}
+varImpPlot(EE_forest)
+```
+
+```{r}
+rforest_EE_predict <- predict(EE_forest,
+                      newdata = rforest_test[,-15],
+                      type = 'class')
+```
+
+```{r}
+confusionMatrix(rforest_EE_predict, as.factor(rforest_test$Cooling_bi))
+```
+Accuracy: 98.27%
+
+
+# I : boosting model
+```{r}
+library(xgboost)
+```
+we can directly use rforest_train and rforest_test subset
+```{r}
+xgboost_train <- rforest_train
+xgboost_test <- rforest_test
+```
+
+```{r}
+str(xgboost_train)
+```
+
+
+```{r}
+as.numeric(xgboost_train$Cooling_bi)
+```
+```{r}
+str(xgboost_test)
+```
+
+```{r}
+x_train <- as.matrix(xgboost_train[,-15])
+y_train <- as.numeric(xgboost_train$Cooling_bi)-1 # transform from factor to numeric, system will change 0,1 to 1,2 so we need to -1
+x_test <- as.matrix(xgboost_test[,-15])
+y_test <- xgboost_test$Cooling_bi # its not factor originally
+```
+
+```{r}
+y_train
+```
+```{r}
+y_test
+```
+
+
+```{r}
+dtrain <- xgb.DMatrix(data = x_train,
+                      label = y_train)
+dtrain
+```
+
+
+```{r}
+EE_xgb <- xgboost(data = dtrain,
+                  max.depth = 5,
+                  eta = 1,
+                  nthread = 2,
+                  nrounds = 1000,
+                  objective = "binary:logistic",
+                  verbose = 0)
+```
+
+
+```{r}
+xgb.plot.importance(xgb.importance(model = EE_xgb),
+                    measure = "Gain")
+```
+# Relative_Compactness is the most important variable to predict EE
+
+
+```{r}
+EE_xgboost_predict <- predict(EE_xgb, x_test)
+head(EE_xgboost_predict)
+```
+
+
+```{r}
+EE_xgboost_predict <- as.numeric(EE_xgboost_predict > 0.5)
+head(EE_xgboost_predict)
+```
+```{r}
+confusionMatrix(as.factor(EE_xgboost_predict), as.factor(y_test))
+```
+Accuracy: 97.84%
+
+```{r}
+plot(EE_svm,
+     SVM_train,
+     Relative_Compactness ~ Glazing_Area, slice = list(Wall_Area = 245,
+                                            Surface_Area = 514.50,
+                                            Roof_Area = 110.25,
+                                            Overall_Height = 3.5,
+                                            Orientation_North = 0,
+                                            Orientation_South = 0,
+                                            Orientation_West = 0,
+                                            Glazing_Area_Distribution_North = 0,
+                                            Glazing_Area_Distribution_South = 0,
+                                            Glazing_Area_Distribution_Uniform = 0,
+                                            Glazing_Area_Distribution_Unknown =0, 
+                                            Glazing_Area_Distribution_West =0))
+
+```
+
+```{r}
+plot(EE_svm,
+     SVM_train,
+     Relative_Compactness ~ Glazing_Area, slice = list(Wall_Area = 245,
+                                            Surface_Area = 514.50,
+                                            Roof_Area = 110.25,
+                                            Overall_Height = 3.5,
+                                            Orientation_North = 0,
+                                            Orientation_South = 1,
+                                            Orientation_West = 0,
+                                            Glazing_Area_Distribution_North = 0,
+                                            Glazing_Area_Distribution_South = 1,
+                                            Glazing_Area_Distribution_Uniform = 0,
+                                            Glazing_Area_Distribution_Unknown =0, 
+                                            Glazing_Area_Distribution_West =0))
+```
