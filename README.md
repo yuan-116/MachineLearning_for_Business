@@ -196,8 +196,8 @@ Key variables:
 | Model           | Target         | Metric      | Result    |
 |----------------|----------------|-------------|-----------|
 | SVM            | Price Quartile | Accuracy    | 0.6638    |
-| Neural Network | Price          | Correlation | 0.84      |
-| KNN            | Price Quartile | Accuracy    | **0.6837** |
+| Neural Network | Price          | Correlation | 0.84 ✅|
+| KNN            | Price Quartile | Accuracy    | **0.6837** ✅|
 | Naïve Bayes    | Price Quartile | Accuracy    | 0.5361    |
 
 ---
