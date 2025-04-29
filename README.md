@@ -44,7 +44,7 @@ Key variables:
 
 ---
 
-### ⚙️ Modeling Techniques
+### 3️⃣ Modeling Techniques
 
 ##### 🔹 Perceptron (1–5)
 - Target: Cooling_cat (A/B vs C/D)
@@ -71,14 +71,18 @@ Key variables:
 ##### 🔹 Decision Tree
 - Target: Cooling_bi
 - Accuracy: **98.27%**
+- Identified `Relative Compactness` as the most important feature for classifying cooling efficiency.
+
 
 ##### 🔹 Random Forest
 - Target: Cooling_bi
 - Accuracy: **98.27%**
+- Identified `Glazing Area` as the most critical feature for classifying cooling efficiency, followed by `Relative Compactness`, and `Surface Area`.
 
 ##### 🔹 XGBoost
 - Target: Cooling_bi
 - Accuracy: **97.84%**
+- Identified `Relative Compactness` as the most important feature for classifying cooling efficiency, followed by `Glazing Area`.
 
 ---
 
@@ -101,12 +105,13 @@ Key variables:
 
 ### 🛡️ Key Findings
 - **Important Variables:**  
-  - Relative Compactness, Surface Area, Wall Area, Overall Height, and Glazing Area significantly impact Cooling Load.
+  - Relative Compactness, Surface Area, Wall Area, Overall Height, and Glazing Area significantly impact Cooling Load in linear regression.
+  - Decision Tree and XGBoosting found Relative Compactness is the most important feature impacting energy efficientcy.
   - Random Forest found Glazing Area most critical, slightly ahead of Relative Compactness.
   - Roof Area, despite multicollinearity issues, contributed in tree-based models.
 - **Model Insights:**  
   - Random Forest, Decision Tree, and Perceptron achieved the best classification performance (~98.27%).
-  - Neural Network delivered strong Cooling Load prediction with a correlation of 0.9812.
+  - Neural Network (Hidden nodes = 4) delivered strong Cooling Load prediction with a correlation of 0.9812.
 - **Energy Efficiency Implications:**  
   - Modifying design factors like glazing and compactness can improve energy efficiency.
   - SVM slice visualizations show how adjusting key features under fixed conditions can optimize building performance.
@@ -114,10 +119,10 @@ Key variables:
 ---
 
 ### 🛠 Tools & Techniques
-- **R Programming (RStudio):** dplyr, car, corrplot, fastDummies, e1071, caret, neuralnet, class, FNN, gmodels
+- **R Studio:** `dplyr`, `car`, `neuralnet`, `e1071`, `class`, `FNN`, `rpart`, `xgboost`
 - **Machine Learning Models:** Perceptron, SVM, Neural Network, KNN, Naïve Bayes, Decision Tree, Random Forest, XGBoost
 - **Statistical Analysis:** Linear Regression, Correlation Matrix, VIF Analysis
-- **Feature Engineering:** Normalization, Dummy Encoding, Target Label Conversion
+- **Feature Engineering:** Normalization, Dummy Encoding, Target Label Conversion, multicollinearity check (VIF)
 
 
 ---
