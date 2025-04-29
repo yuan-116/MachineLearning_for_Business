@@ -5,7 +5,7 @@ BUA 751: Machine Learning for Business assignments demonstrating the machine lea
 
 A machine learning project to predict and classify **Cooling Load**, a critical factor for building energy efficiency. Multiple supervised learning models were developed and compared based on building design attributes.
 
-[📂Files and Presentation](GitHubLinkHere)
+[📂Files and Presentation](https://github.com/yuan-116/MachineLearning_for_Business/tree/main/Energy_Efficientcy_Cooling_Load)
 
 ---
 
