@@ -9,7 +9,7 @@ A machine learning project to predict and classify **Cooling Load**, a critical 
 
 ---
 
-### 📊 Dataset Overview
+### Dataset Overview
 
 Key variables:
 - Relative Compactness
@@ -27,7 +27,7 @@ Key variables:
 
 ---
 
-### 🧭 Workflow
+###  Workflow
 
 #### 1️⃣ Exploratory Data Analysis (EDA)
 - Scatterplots to visualize feature relationships
@@ -86,7 +86,7 @@ Key variables:
 
 ---
 
-### 📊 Model Comparison
+###  Model Comparison
 
 | Model            | Target         | Metric        | Result    | Best? |
 |------------------|----------------|---------------|-----------|-------|
@@ -103,7 +103,7 @@ Key variables:
 ---
 
 
-### 🛡️ Key Findings
+###  Key Findings
 - **Important Variables:**  
   - Relative Compactness, Surface Area, Wall Area, Overall Height, and Glazing Area significantly impact Cooling Load in linear regression.
   - Decision Tree and XGBoosting found Relative Compactness is the most important feature impacting energy efficientcy.
@@ -118,7 +118,7 @@ Key variables:
 
 ---
 
-### 🛠 Tools & Techniques
+###  Tools & Techniques
 - **R Studio:** `dplyr`, `car`, `neuralnet`, `e1071`, `class`, `FNN`, `rpart`, `xgboost`
 - **Machine Learning Models:** Perceptron, SVM, Neural Network, KNN, Naïve Bayes, Decision Tree, Random Forest, XGBoost
 - **Statistical Analysis:** Linear Regression, Correlation Matrix, VIF Analysis
@@ -136,7 +136,7 @@ An end-to-end data analytics and machine learning project analyzing house prices
 
 ---
 
-### 📊 Dataset Overview
+### Dataset Overview
 
 Key variables:
 - Property Type
@@ -148,7 +148,7 @@ Key variables:
 
 ---
 
-### 🧭 Workflow
+###  Workflow
 
 #### 1️⃣ Exploratory Data Analysis (EDA)
 - Created visualizations to explore price distributions:
@@ -191,7 +191,7 @@ Key variables:
 
 ---
 
-#### 📊 Model Comparison
+####  Model Comparison
 
 | Model           | Target         | Metric      | Result    |
 |----------------|----------------|-------------|-----------|
@@ -202,7 +202,7 @@ Key variables:
 
 ---
 
-### 🛠 Tools & Techniques
+### Tools & Techniques
 - R Studio(dplyr, corrplot, car, fastDummies, e1071, caret, neuralnet, class, FNN, gmodels)
 - Machine Learning Models: Linear Regression, SVM, Neural Networks, KNN, Naïve Bayes
 - VIF Analysis, Correlation Matrix, Dummy Encoding
@@ -215,7 +215,7 @@ A regression-focused machine learning project using **Linear Regression** and **
 
 [📂Files and Presentation](https://github.com/yuan-116/MachineLearning_for_Business/tree/main/Wine_Quality_Analysis)
 
-### 📊 Dataset
+### Dataset
 The dataset contains various physicochemical properties of wine such as:
 - Alcohol
 - Chlorides
@@ -232,7 +232,7 @@ Target variable: **Quality** (numeric score)
 
 ---
 
-### 🧭 Workflow
+###  Workflow
 
 #### 1️⃣ Exploratory Data Analysis (EDA)
 ##### Correlation Analysis
@@ -281,7 +281,7 @@ Target variable: **Quality** (numeric score)
 
 ---
 
-### 🛠 Tools & Techniques
+### Tools & Techniques
 - R Studio( dplyr, psych, corrplot, ggplot2, car, neuralnet)
 - Machine Learning Model: Neural Networks (Continuous Variables)
 - Correlation, Linear Regression, VIF for multicollinearity diagnostics
@@ -310,7 +310,7 @@ Target variable: **Disease (1 = Liver Disease, 0 = No Disease)**
 
 ---
 
-### 🧭 Workflow
+###  Workflow
 
 #### 1️⃣ Exploratory Data Analysis (EDA)
 ##### Correlation Analysis
@@ -341,10 +341,9 @@ Target variable: **Disease (1 = Liver Disease, 0 = No Disease)**
 | Model 5 | Significant only | 2 | 0.7011 |
 | Model 6 | Significant only | 3 | **0.7414** ✅ |
 
-- Using only statistically significant variables increased model efficiency and performance
 ---
 
-### 🛠 Tools & Techniques
+### Tools & Techniques
 - R Studio (neuralnet, caret)
 - Machine Learning Models: Neural Networks (binary output)
 - Correlation Analysis, Logit Regression
@@ -355,7 +354,7 @@ A machine learning classification project using Perceptron and Support Vector Ma
 
 [📂Files and Presentation](https://github.com/yuan-116/MachineLearning_for_Business/tree/main/Medical_Analysis_HeartFailure)
 
-### 📊 Dataset
+###  Dataset
 This project analyzes a heart failure dataset including features such as:
 - Age
 - Serum Creatinine
@@ -368,7 +367,7 @@ Target variable: **DEATH_EVENT (0 = Alive, 1 = Death)**
 
 ---
 
-### 🧭 Workflow
+### Workflow
 
 #### 1️⃣ Exploratory Data Analysis (EDA)
 ##### Correlation Analysis:
@@ -401,7 +400,7 @@ Target variable: **DEATH_EVENT (0 = Alive, 1 = Death)**
   - Risk comparison between patient profiles (e.g., smoker vs non-smoker, with/without high blood pressure)
  
   ---
-🛠 Tools & Techniques
+Tools & Techniques
 
 - R Studio (dplyr, ggplot2, e1071)
 
